@@ -32,10 +32,16 @@ ENV/
 *.swo
 
 # Database
+# -shm ve -wal: SQLite WAL dosyalari. Ana dosyaya henuz yazilmamis GERCEK
+# VERI icerirler (parola hash'leri dahil); *.db kurali bunlari yakalamaz.
 *.db
+*.db-shm
+*.db-wal
 *.db.bak*
 *.sqlite
 *.sqlite3
+*.sqlite-shm
+*.sqlite-wal
 
 # Environment
 .env
