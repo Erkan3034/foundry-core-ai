@@ -25,7 +25,7 @@ function Fail($msg)  { Write-Host "    HATA: $msg" -ForegroundColor Red; exit 1 
 
 Write-Host "Foundry Core AI kurulumu baslatiliyor..." -ForegroundColor Yellow
 
-# --- 1. Python 3.11+ kontrolu -----------------------------------------
+# --- 1. Python 3.11+ kontrolu 
 Step "Python kontrol ediliyor"
 $py = Get-Command python -ErrorAction SilentlyContinue
 if ($null -eq $py) {
@@ -38,7 +38,7 @@ if ([int]$parts[0] -lt 3 -or ([int]$parts[0] -eq 3 -and [int]$parts[1] -lt 11)) 
 }
 Ok "Python $verOut"
 
-# --- 2. Foundry Local CLI kontrolu ------------------------------------
+# --- 2. Foundry Local CLI kontrolu 
 Step "Foundry Local kontrol ediliyor"
 $foundry = Get-Command foundry -ErrorAction SilentlyContinue
 if ($null -eq $foundry) {
@@ -56,7 +56,7 @@ if ($null -eq $foundry) {
 }
 Ok "Foundry Local: $(& foundry --version 2>$null | Select-Object -First 1)"
 
-# --- 3. Sanal ortam ----------------------------------------------------
+# --- 3. Sanal ortam 
 Step "Python sanal ortami hazirlaniyor"
 if (-not (Test-Path "$root\venv\Scripts\python.exe")) {
     python -m venv venv
@@ -64,7 +64,7 @@ if (-not (Test-Path "$root\venv\Scripts\python.exe")) {
 }
 Ok "venv hazir"
 
-# --- 4. Bagimliliklar --------------------------------------------------
+# --- 4. Bagimliliklar 
 Step "Bagimliliklar yukleniyor (requirements.lock - sabitlenmis surumler)"
 & "$root\venv\Scripts\python.exe" -m pip install --quiet --upgrade pip
 & "$root\venv\Scripts\python.exe" -m pip install --quiet -r requirements.lock
@@ -75,7 +75,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 Ok "Bagimliliklar yuklendi"
 
-# --- 5. Yapilandirma ---------------------------------------------------
+# --- 5. Yapilandirma 
 Step "Yapilandirma dosyasi"
 if (-not (Test-Path "$root\.env")) {
     Copy-Item "$root\.env.example" "$root\.env"
@@ -84,13 +84,13 @@ if (-not (Test-Path "$root\.env")) {
     Ok ".env zaten var, dokunulmadi"
 }
 
-# --- 6. Kurulum dogrulamasi -------------------------------------------
+# --- 6. Kurulum dogrulamasi 
 Step "Kurulum dogrulaniyor (birim testleri)"
 & "$root\venv\Scripts\python.exe" -m pytest tests/ -q --tb=no 2>&1 | Select-Object -Last 1
 if ($LASTEXITCODE -ne 0) { Fail "Testler basarisiz. Cikti icin: venv\Scripts\python -m pytest tests/" }
 Ok "Tum testler gecti"
 
-# --- 7. (Istege bagli) Modelleri onceden indir -------------------------
+# --- 7. (Istege bagli) Modelleri onceden indir 
 if ($PreloadModels) {
     Step "Modeller indiriliyor (bir kereliktir, ~2-3 GB surebilir)"
     & "$root\venv\Scripts\python.exe" -c "from rag_engine import RAGEngine; e = RAGEngine(); e.initialize(); e.shutdown(); print('Modeller hazir.')"
@@ -98,7 +98,7 @@ if ($PreloadModels) {
     Ok "Modeller indirildi ve dogrulandi"
 }
 
-# --- Bitti -------------------------------------------------------------
+# --- Bitti 
 Write-Host ""
 Write-Host "=====================================================" -ForegroundColor Green
 Write-Host " Kurulum tamamlandi." -ForegroundColor Green

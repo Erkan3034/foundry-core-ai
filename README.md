@@ -20,11 +20,8 @@
 Belgeler de, embedding modeli de, dil modeli de cihazda calisir; hicbir veri
 disari cikmaz. Microsoft Foundry Local uzerine kurulmustur.
 
-> Bu proje bagimsiz bir calismadir ve Microsoft ile herhangi bir kurumsal
-> baglantisi yoktur. "Foundry Local" Microsoft'un urunudur; bu proje onu bir
-> calisma zamani olarak kullanir.
 
-![Web arayuzu](ui.png)
+![Web arayuzu](docs/imgs/ui.png)
 
 ## Neden
 
