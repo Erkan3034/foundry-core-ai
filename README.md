@@ -65,24 +65,35 @@ Terimler: **[Sozluk](docs/glossary.md)**
 
 ## Kurulum
 
-**Gereksinimler:** Python 3.11+, Windows 10/11 / macOS 13+ / Linux, 8 GB+ RAM
-(16 GB onerilir), ~10-15 GB disk.
+**Gereksinimler:** Windows 10/11 (macOS icin asagiya bakin), Python 3.11+,
+8 GB+ RAM (16 GB onerilir), ~15 GB disk. Internet yalnizca kurulumda gerekir.
+
+### Tek adim (Windows)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File install.ps1 -PreloadModels
+```
+
+Betik her seyi yapar: Python ve Foundry Local'i dogrular (yoksa winget ile
+kurar), sanal ortami olusturur, bagimliliklari sabitlenmis surumlerle
+(`requirements.lock`) yukler, `.env` olusturur ve **159 testi calistirarak
+kurulumu dogrular**. `-PreloadModels` modelleri (~2-3 GB) kurulumda indirir.
+Gunluk baslatma: `start.bat`.
+
+Firma teslimi, yedekleme ve guncelleme akisi: **[docs/dagitim.md](docs/dagitim.md)**
+Neden Docker degil: [ADR-0008](docs/adr/0008-dagitim-stratejisi.md)
+
+### Elle kurulum (macOS veya tercihen)
 
 ```bash
-# 1. Foundry Local CLI
-winget install Microsoft.FoundryLocal        # Windows
-brew install microsoft/foundrylocal/foundrylocal   # macOS
-foundry --version                            # dogrula
-
-# 2. Python ortami
-python -m venv venv
-venv\Scripts\activate                        # Windows
-source venv/bin/activate                     # macOS/Linux
+brew install microsoft/foundrylocal/foundrylocal   # macOS (Windows: winget install Microsoft.FoundryLocal)
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-
-# 3. Yapilandirma
-cp .env.example .env                         # varsayilanlar calisir durumda
+cp .env.example .env
 ```
+
+> Linux desteklenmez: Foundry Local'in Linux calisma zamani yok
+> ([ADR-0008](docs/adr/0008-dagitim-stratejisi.md)).
 
 ## Kullanim
 

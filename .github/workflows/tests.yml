@@ -1,0 +1,21 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    # Foundry Local SDK yalnizca Windows/macOS wheel'i dagitir (bkz. ADR-0008);
+    # bu yuzden ubuntu degil windows runner.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Bagimliliklari yukle
+        run: pip install -r requirements.txt
+      - name: Testleri calistir
+        run: pytest tests/ -q

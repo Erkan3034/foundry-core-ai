@@ -16,3 +16,4 @@ kaybettirdi (takas), ve degistirmek birden fazla dosyaya dokunmayi gerektirir.
 | [0005](0005-kimlik-dogrulama.md) | Rol tabanli kimlik dogrulama | Plandan bilincli sapma; kurumsal belgelerde "kim yukleyebilir/silebilir" sorusu |
 | [0006](0006-ag-erisimi-ve-tasima-guvenligi.md) | Varsayilan `127.0.0.1`, TLS ters vekile birakildi | Uygulama ici TLS, kurulumsuz calisma iddiasiyla celisirdi |
 | [0007](0007-tekrar-dongusu-savunmasi.md) | Ornekleme yerine deterministik dongu tespiti | `FREQUENCY_PENALTY` ayari modele ozgu ve kirilgandi; tespit model-bagimsiz ve olculebilir |
+| [0008](0008-dagitim-stratejisi.md) | Docker yerine yerel kurulum betigi | Foundry Local'in Linux calisma zamani yok; Linux konteynerinde stack hic acilmaz |
