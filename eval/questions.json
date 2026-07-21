@@ -1,0 +1,183 @@
+{
+  "_aciklama": "RAG kalite degerlendirme seti. Plan Faz 3 / Hafta 5 teslimati: 'a list of queries attempted and whether the responses were correct/appropriate'.",
+  "_tipler": {
+    "cevaplanabilir": "Yanit belgelerde var. Beklenen anahtarlar yanitta gecmeli, beklenen kaynak sources listesinde olmali.",
+    "cevaplanamaz": "Yanit belgelerde YOK. Sistem reddetmeli (hallucination testi).",
+    "tuzak": "Anahtar kelimeler belgelerde geciyor ama sorunun cevabi yok. Hibrit aramanin keyword-rescue yolunu sinar.",
+    "kenar_durum": "Bozuk/bos/asiri genel girdi. Sistem cokmeden makul davranmali."
+  },
+  "sorular": [
+    {
+      "id": "C01",
+      "tip": "cevaplanabilir",
+      "soru": "Ise yeni baslayan bir calisan ilk yilini doldurunca kac is gunu yillik izne hak kazanir?",
+      "beklenen_kaynak": "izin_politikasi.txt",
+      "beklenen_anahtarlar": ["14"]
+    },
+    {
+      "id": "C02",
+      "tip": "cevaplanabilir",
+      "soru": "Izin talebi en az kac is gunu once girilmelidir?",
+      "beklenen_kaynak": "izin_politikasi.txt",
+      "beklenen_anahtarlar": ["5"]
+    },
+    {
+      "id": "C03",
+      "tip": "cevaplanabilir",
+      "soru": "Evlilik durumunda kac is gunu ucretli mazeret izni verilir?",
+      "beklenen_kaynak": "izin_politikasi.txt",
+      "beklenen_anahtarlar": ["3"]
+    },
+    {
+      "id": "C04",
+      "tip": "cevaplanabilir",
+      "soru": "Sehir ici is yemeklerinde kisi basi ust limit nedir?",
+      "beklenen_kaynak": "masraf_politikasi.txt",
+      "beklenen_anahtarlar": ["750"]
+    },
+    {
+      "id": "C05",
+      "tip": "cevaplanabilir",
+      "soru": "Musteri agirlama yemeklerinde kisi basi limit ne kadardir?",
+      "beklenen_kaynak": "masraf_politikasi.txt",
+      "beklenen_anahtarlar": ["1.500", "1500"]
+    },
+    {
+      "id": "C06",
+      "tip": "cevaplanabilir",
+      "soru": "Gecikmis masraf talepleri kac gun sonra odenmez?",
+      "beklenen_kaynak": "masraf_politikasi.txt",
+      "beklenen_anahtarlar": ["30"]
+    },
+    {
+      "id": "C07",
+      "tip": "cevaplanabilir",
+      "soru": "Haftada en fazla kac gun uzaktan calisabilirim?",
+      "beklenen_kaynak": "uzaktan_calisma.txt",
+      "beklenen_anahtarlar": ["2"]
+    },
+    {
+      "id": "C08",
+      "tip": "cevaplanabilir",
+      "soru": "Hangi gun tum ekiplerin ofiste bulunmasi zorunludur?",
+      "beklenen_kaynak": "uzaktan_calisma.txt",
+      "beklenen_anahtarlar": ["Pazartesi"]
+    },
+    {
+      "id": "C09",
+      "tip": "cevaplanabilir",
+      "soru": "Standart mesai saatleri nedir?",
+      "beklenen_kaynak": "uzaktan_calisma.txt",
+      "beklenen_anahtarlar": ["09:00", "18:00"]
+    },
+    {
+      "id": "C10",
+      "tip": "cevaplanabilir",
+      "soru": "Kurumsal VPN istemcisinin adi nedir?",
+      "beklenen_kaynak": "vpn_ve_bt_sss.txt",
+      "beklenen_anahtarlar": ["SecureConnect"]
+    },
+    {
+      "id": "C11",
+      "tip": "cevaplanabilir",
+      "soru": "VPN baglantisi kac saat sonra otomatik olarak sonlanir?",
+      "beklenen_kaynak": "vpn_ve_bt_sss.txt",
+      "beklenen_anahtarlar": ["12"]
+    },
+    {
+      "id": "C12",
+      "tip": "cevaplanabilir",
+      "soru": "Standart dizustu bilgisayar yenileme suresi kac yildir?",
+      "beklenen_kaynak": "vpn_ve_bt_sss.txt",
+      "beklenen_anahtarlar": ["3"]
+    },
+
+    {
+      "id": "R01",
+      "tip": "cevaplanamaz",
+      "soru": "Sirketin 2025 yili cirosu ne kadardir?",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "R02",
+      "tip": "cevaplanamaz",
+      "soru": "Sirketin Paris ofisinin adresi nedir?",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "R03",
+      "tip": "cevaplanamaz",
+      "soru": "Calisanlara hisse senedi opsiyonu veriliyor mu?",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "R04",
+      "tip": "cevaplanamaz",
+      "soru": "Sirketin CEO'su kimdir ve sirket hangi yil kurulmustur?",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+
+    {
+      "id": "T01",
+      "tip": "tuzak",
+      "soru": "Yillik ciro hedefi ve kar marji nedir?",
+      "_neden": "'yillik' kelimesi izin_politikasi'nda gecer; BM25 ayagi eslesir ama cevap yoktur.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "T02",
+      "tip": "tuzak",
+      "soru": "Ofisteki toplanti salonunun aylik kirasi ne kadar?",
+      "_neden": "'ofis' ve 'toplanti' belgelerde gecer; 'kira' gecmez.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "T03",
+      "tip": "tuzak",
+      "soru": "Kurumsal VPN altyapisinin yillik maliyeti butcede ne kadar?",
+      "_neden": "'VPN', 'kurumsal', 'yillik' belgelerde gecer; 'maliyet' ve 'butce' hicbir belgede gecmez.",
+      "_gecmis": "Ilk surumde bu soru 'Izin gunlerinde VPN parolasi kac gunde bir degisir?' idi. Hatali bir tuzakti: parola rotasyonu (90 gun) bilgi_guvenligi.txt'de gercekten var, dolayisiyla model reddetmedigi icin degil DOGRU cevap verdigi icin 'kaldi' sayiliyordu. Test duzeltildi, skor duzeltilmedi.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+
+    {
+      "id": "K01",
+      "tip": "kenar_durum",
+      "soru": "",
+      "_beklenti": "Cokmeden reddetmeli veya dogrulama hatasi dondurmeli.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "K02",
+      "tip": "kenar_durum",
+      "soru": "?",
+      "_beklenti": "Cokmemeli; anlamsiz sorguda reddetmeli.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "K03",
+      "tip": "kenar_durum",
+      "soru": "merhaba",
+      "_beklenti": "Cokmemeli. Selamlama belgede olmadigi icin reddetmesi kabul edilebilir.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    },
+    {
+      "id": "K04",
+      "tip": "kenar_durum",
+      "soru": "Sirket hakkindaki her seyi bana tek tek anlat",
+      "_beklenti": "Cokmemeli, sonsuz donguye girmemeli, makul uzunlukta yanit vermeli.",
+      "beklenen_kaynak": null,
+      "beklenen_anahtarlar": []
+    }
+  ]
+}
