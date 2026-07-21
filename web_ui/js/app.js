@@ -84,6 +84,13 @@ function bindEvents() {
             checkHealth();
             const welcome = document.getElementById('welcomeScreen');
             if (welcome) clearChatUI();
+
+            // updateDOMTranslations yalnizca data-i18n tasiyan STATIK ogeleri
+            // ceviriyor. Panel icerikleri ve sohbet listesi JS ile uretiliyor;
+            // t() cagrisi cizim aninda calistigi icin acik bir panel eski
+            // dilde kalirdi. Bu yuzden acik olan ne varsa yeniden cizilir.
+            if (activePanel) openPanel(activePanel);
+            loadChatSessions();
         });
     }
 
@@ -220,9 +227,9 @@ async function sendMessage() {
         try {
             await fallbackAnswer(query, holder);
         } catch (err2) {
-            holder.content.innerHTML = `<p>Hata: ${escapeHtml(err2.message)}. API sunucusunun çalıştığından emin olun.</p>`;
+            holder.content.innerHTML = `<p>${t('errorApiDown', { error: escapeHtml(err2.message) })}</p>`;
             holder.root.classList.add('error');
-            showToast('error', 'Sorgu gönderilemedi: ' + err2.message);
+            showToast('error', t('queryFailed', { error: err2.message }));
         }
     } finally {
         holder.content.classList.remove('streaming');
@@ -279,7 +286,7 @@ async function streamAnswer(query, holder) {
             try { event = JSON.parse(payload); } catch { continue; }
 
             if (event.type === 'error') {
-                throw new Error(event.message || 'Sunucu hatası');
+                throw new Error(event.message || t('serverError'));
             } else if (event.type === 'metadata') {
                 meta = event;
             } else if (event.type === 'delta' && event.content) {
@@ -296,7 +303,7 @@ async function streamAnswer(query, holder) {
 
     holder.content.classList.remove('streaming');
     if (!started) {
-        holder.content.innerHTML = '<p>Yanıt alınamadı.</p>';
+        holder.content.innerHTML = `<p>${t('noResponse')}</p>`;
     } else {
         holder.content.innerHTML = renderMarkdown(answer);
         addMessageActions(holder, query, answer);
@@ -464,7 +471,7 @@ function openPanel(kind) {
         document.getElementById('panelTitle').textContent = t('navDocs');
         loadDocuments();
     } else if (kind === 'users') {
-        document.getElementById('panelTitle').textContent = 'Kullanıcılar';
+        document.getElementById('panelTitle').textContent = t('navUsers');
         renderUsersPanel();
     } else {
         document.getElementById('panelTitle').textContent = t('navSettings');
@@ -497,7 +504,7 @@ async function loadDocuments() {
         const data = await response.json();
 
         if (!data.documents || data.documents.length === 0) {
-            list.innerHTML = `<div class="empty-state">${ICONS.fileEmpty}<span>Henüz belge yok. Yükle butonu ile başlayın.</span></div>`;
+            list.innerHTML = `<div class="empty-state">${ICONS.fileEmpty}<span>${t('noDocsYet')}</span></div>`;
             setDocBadge(0);
             return;
         }
@@ -511,7 +518,7 @@ async function loadDocuments() {
                 <span class="doc-icon">${ICONS.file}</span>
                 <div class="doc-info">
                     <div class="doc-name" title="${escapeHtml(doc.source)}">${escapeHtml(doc.source)}</div>
-                    <div class="doc-meta">${doc.chunk_count || 0} parça</div>
+                    <div class="doc-meta">${doc.chunk_count || 0} ${t('unitChunks')}</div>
                 </div>
                 ${isAdmin() ? `<button class="doc-delete-btn" type="button" aria-label="Belgeyi sil" title="Belgeyi sil">${ICONS.trash}</button>` : ''}
             </div>
@@ -527,12 +534,12 @@ async function loadDocuments() {
             });
         });
     } catch (e) {
-        list.innerHTML = `<div class="empty-state is-error">${ICONS.alertCircle}<span>Belgeler yüklenemedi</span></div>`;
+        list.innerHTML = `<div class="empty-state is-error">${ICONS.alertCircle}<span>${t('docsLoadFailed')}</span></div>`;
     }
 }
 
 async function deleteDocument(docId, itemEl) {
-    if (!confirm('Bu belgeyi ve tüm parçalarını silmek istediğinize emin misiniz?')) return;
+    if (!confirm(t('confirmDeleteDoc'))) return;
 
     try {
         const response = await apiFetch(`/documents/${docId}`, { method: 'DELETE' });
@@ -550,7 +557,7 @@ async function renderSettingsPanel() {
     const body = document.getElementById('panelBody');
     body.innerHTML = `
         <div class="settings-section">
-            <div class="settings-section-title">Bağlantı</div>
+            <div class="settings-section-title">${t('sectionConnection')}</div>
             <div class="settings-card">
                 <div class="settings-row"><span class="label">API adresi</span><span class="value">${escapeHtml(API_BASE)}</span></div>
                 <div class="settings-row"><span class="label">Durum</span><span class="value" id="stHealth">Kontrol ediliyor…</span></div>
@@ -558,10 +565,10 @@ async function renderSettingsPanel() {
             </div>
         </div>
         <div class="settings-section">
-            <div class="settings-section-title">Bilgi Tabanı</div>
+            <div class="settings-section-title">${t('navDocs')}</div>
             <div class="settings-card">
                 <div class="settings-row"><span class="label">Belgeler</span><span class="value" id="stDocs">—</span></div>
-                <div class="settings-row"><span class="label">Parçalar</span><span class="value" id="stChunks">—</span></div>
+                <div class="settings-row"><span class="label">${t('labelChunks')}</span><span class="value" id="stChunks">—</span></div>
                 <div class="settings-row"><span class="label">Embedding'li</span><span class="value" id="stEmbedded">—</span></div>
             </div>
         </div>
@@ -576,11 +583,11 @@ async function loadSettingsData() {
         const healthEl = document.getElementById('stHealth');
         const modelEl = document.getElementById('stModel');
         if (healthEl) {
-            healthEl.textContent = data.status === 'healthy' ? 'Çevrimiçi' : 'Sorunlu';
+            healthEl.textContent = data.status === 'healthy' ? t('statusHealthy') : t('statusUnhealthy');
             healthEl.className = 'value ' + (data.status === 'healthy' ? 'ok' : 'bad');
         }
         if (modelEl) {
-            modelEl.textContent = data.models_loaded ? 'Yüklendi' : 'Yüklenmedi';
+            modelEl.textContent = data.models_loaded ? t('modelLoaded') : t('modelNotLoaded');
             modelEl.className = 'value ' + (data.models_loaded ? 'ok' : 'bad');
         }
         if (data.stats) {

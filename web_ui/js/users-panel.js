@@ -6,6 +6,7 @@
 import { listUsers, createUser, resetUserPassword, deactivateUser, getUser } from './auth.js';
 import { escapeHtml } from './markdown.js';
 import { showToast } from './ui.js';
+import { t } from './i18n.js';
 
 /** Yonetici tarafindan verilecek gecici parola onerisi. */
 function suggestPassword() {
@@ -17,8 +18,8 @@ function suggestPassword() {
 function userRow(user, currentUserId) {
     const kendisi = user.id === currentUserId;
     const sonGiris = user.last_login_at
-        ? new Date(user.last_login_at).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' })
-        : 'hiç giriş yapmadı';
+        ? new Date(user.last_login_at).toLocaleString(t('dateLocale'), { dateStyle: 'short', timeStyle: 'short' })
+        : t('userNeverLoggedIn');
 
     return `
         <div class="user-row ${user.is_active ? '' : 'inactive'}" data-user-id="${user.id}">
@@ -26,20 +27,20 @@ function userRow(user, currentUserId) {
                 <div class="user-row-name">
                     ${escapeHtml(user.username)}
                     <span class="role-tag ${user.role === 'admin' ? 'admin' : ''}">
-                        ${user.role === 'admin' ? 'Yönetici' : 'Kullanıcı'}
+                        ${user.role === 'admin' ? t('roleManager') : t('roleUser')}
                     </span>
-                    ${user.must_change_password ? '<span class="role-tag">parola bekliyor</span>' : ''}
-                    ${user.is_active ? '' : '<span class="role-tag">kapalı</span>'}
+                    ${user.must_change_password ? `<span class="role-tag">${t('pendingPassword')}</span>` : ''}
+                    ${user.is_active ? '' : `<span class="role-tag">${t('tagDisabled')}</span>`}
                 </div>
-                <div class="user-row-meta">Son giriş: ${sonGiris}</div>
+                <div class="user-row-meta">${t('lastLogin')}: ${sonGiris}</div>
             </div>
             <button class="btn" data-action="reset" ${user.is_active ? '' : 'disabled'}>
-                Parola sıfırla
+                ${t('btnResetPassword')}
             </button>
             <button class="btn btn-danger" data-action="deactivate"
                 ${kendisi || !user.is_active ? 'disabled' : ''}
-                title="${kendisi ? 'Kendi hesabınızı kapatamazsınız' : 'Hesabı kapat'}">
-                Kapat
+                title="${kendisi ? t('cannotDisableSelf') : t('disableAccount')}">
+                ${t('btnDisable')}
             </button>
         </div>
     `;
@@ -47,41 +48,41 @@ function userRow(user, currentUserId) {
 
 export async function renderUsersPanel() {
     const host = document.getElementById('panelBody');
-    host.innerHTML = '<div class="empty-state">Yükleniyor…</div>';
+    host.innerHTML = `<div class="empty-state">${t('loading')}</div>`;
 
     let users;
     try {
         users = await listUsers();
     } catch (err) {
-        host.innerHTML = `<div class="empty-state">Kullanıcılar alınamadı: ${escapeHtml(err.message)}</div>`;
+        host.innerHTML = `<div class="empty-state">${t('usersLoadFailed', { error: escapeHtml(err.message) })}</div>`;
         return;
     }
 
     const me = getUser();
     host.innerHTML = `
         <form class="user-create" id="userCreateForm" style="margin-bottom:18px">
-            <label class="auth-label" for="newUsername">Yeni kullanıcı</label>
-            <input class="auth-input" id="newUsername" placeholder="kullanıcı adı" required
+            <label class="auth-label" for="newUsername">${t('newUserLabel')}</label>
+            <input class="auth-input" id="newUsername" placeholder="${t('usernamePlaceholder')}" required
                 autocomplete="off" style="margin-bottom:10px">
 
-            <label class="auth-label" for="newUserPassword">Geçici parola</label>
+            <label class="auth-label" for="newUserPassword">${t('tempPasswordLabel')}</label>
             <input class="auth-input" id="newUserPassword" required minlength="8"
                 autocomplete="off" style="margin-bottom:10px" value="${suggestPassword()}">
 
-            <label class="auth-label" for="newUserRole">Rol</label>
+            <label class="auth-label" for="newUserRole">${t('roleLabel')}</label>
             <select class="auth-input" id="newUserRole" style="margin-bottom:12px">
-                <option value="user">Kullanıcı — yalnızca soru sorar</option>
-                <option value="admin">Yönetici — belge ve kullanıcı yönetir</option>
+                <option value="user">${t('roleUserOption')}</option>
+                <option value="admin">${t('roleAdminOption')}</option>
             </select>
 
             <p class="auth-error" id="userCreateError" hidden></p>
-            <button class="auth-submit" type="submit">Kullanıcı ekle</button>
+            <button class="auth-submit" type="submit">${t('btnAddUser')}</button>
             <p class="auth-hint" style="text-align:left">
-                Bu parolayı kullanıcıya siz iletirsiniz; ilk girişte değiştirmesi zorunludur.
+                ${t('userCreateHint')}
             </p>
         </form>
 
-        <div class="nav-title" style="padding-left:0">Mevcut kullanıcılar (${users.length})</div>
+        <div class="nav-title" style="padding-left:0">${t('existingUsers', { count: users.length })}</div>
         <div id="userList">${users.map(u => userRow(u, me?.id)).join('')}</div>
     `;
 
@@ -102,7 +103,7 @@ function bindCreateForm() {
 
         try {
             await createUser(username, password, role);
-            showToast('success', `${username} eklendi. Geçici parola: ${password}`);
+            showToast('success', t('userAdded', { username, password }));
             renderUsersPanel();
         } catch (err) {
             error.textContent = err.message;
@@ -122,10 +123,10 @@ function bindRowActions() {
 
         if (button.dataset.action === 'reset') {
             const yeni = suggestPassword();
-            if (!confirm(`${username} kullanıcısının parolası sıfırlanacak.\n\nYeni geçici parola:\n${yeni}\n\nBu parolayı kullanıcıya iletmeniz gerekir. Devam edilsin mi?`)) return;
+            if (!confirm(t('confirmResetPassword', { username, password: yeni }))) return;
             try {
                 await resetUserPassword(userId, yeni);
-                showToast('success', `Parola sıfırlandı: ${yeni}`);
+                showToast('success', t('passwordResetDone', { password: yeni }));
                 renderUsersPanel();
             } catch (err) {
                 showToast('error', err.message);
@@ -133,10 +134,10 @@ function bindRowActions() {
         }
 
         if (button.dataset.action === 'deactivate') {
-            if (!confirm(`${username} hesabı kapatılacak ve açık oturumları anında sonlandırılacak. Devam edilsin mi?`)) return;
+            if (!confirm(t('confirmDisableUser', { username }))) return;
             try {
                 await deactivateUser(userId);
-                showToast('success', `${username} kapatıldı`);
+                showToast('success', t('userDisabled', { username }));
                 renderUsersPanel();
             } catch (err) {
                 showToast('error', err.message);

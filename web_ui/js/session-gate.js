@@ -9,6 +9,7 @@ import {
     login, logout, restoreSession, changePassword,
     configureAuth, getUser, isAdmin,
 } from './auth.js';
+import { t } from './i18n.js';
 
 let onAuthenticated = () => {};
 
@@ -67,7 +68,7 @@ function renderUserChip() {
         <span class="user-chip-avatar">${user.username.slice(0, 2).toUpperCase()}</span>
         <span class="user-chip-text">
             <span class="user-chip-name">${user.username}</span>
-            <span class="user-chip-role">${user.role === 'admin' ? 'Yönetici' : 'Kullanıcı'}</span>
+            <span class="user-chip-role">${user.role === 'admin' ? t('roleManager') : t('roleUser')}</span>
         </span>
     `;
 }
@@ -80,7 +81,7 @@ function bindLoginForm() {
         const button = el('loginSubmit');
         const error = el('loginError');
         button.disabled = true;
-        button.textContent = 'Giriş yapılıyor…';
+        button.textContent = t('loggingIn');
         hide(error);
 
         try {
@@ -92,13 +93,13 @@ function bindLoginForm() {
                 onAuthenticated();
             }
         } catch (err) {
-            error.textContent = err.message || 'Giriş başarısız';
+            error.textContent = err.message || t('loginFailed');
             show(error);
             el('loginPassword').value = '';
             el('loginPassword').focus();
         } finally {
             button.disabled = false;
-            button.textContent = 'Giriş yap';
+            button.textContent = t('btnLogin');
         }
     });
 }
@@ -112,26 +113,26 @@ function bindPasswordForm() {
         const tekrar = el('newPassword2').value;
 
         if (yeni !== tekrar) {
-            error.textContent = 'Yeni parolalar eşleşmiyor';
+            error.textContent = t('passwordsDontMatch');
             show(error);
             return;
         }
 
         button.disabled = true;
-        button.textContent = 'Değiştiriliyor…';
+        button.textContent = t('changingPassword');
         hide(error);
 
         try {
             await changePassword(el('oldPassword').value, yeni);
             // Sunucu parola degisiminde tum oturumlari duserur; yeniden giris gerekir.
             el('passwordForm').reset();
-            showLogin({ message: 'Parolanız güncellendi. Yeni parolanızla giriş yapın.' });
+            showLogin({ message: t('passwordUpdated') });
         } catch (err) {
-            error.textContent = err.message || 'Parola değiştirilemedi';
+            error.textContent = err.message || t('passwordChangeFailed');
             show(error);
         } finally {
             button.disabled = false;
-            button.textContent = 'Parolayı değiştir';
+            button.textContent = t('btnChangePassword');
         }
     });
 }
@@ -154,7 +155,7 @@ export async function initSessionGate(callbacks = {}) {
 
     configureAuth({
         // Token suresi dolarsa veya admin hesabi kapatirsa: aninda girise dus
-        onUnauthorized: () => showLogin({ message: 'Oturumunuz sona erdi, tekrar giriş yapın.' }),
+        onUnauthorized: () => showLogin({ message: t('sessionExpired') }),
         onPasswordChangeRequired: showPasswordChange,
     });
 

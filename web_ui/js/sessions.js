@@ -65,7 +65,7 @@ export function renderHistoryList() {
     if (!list) return;
 
     if (chatSessions.length === 0) {
-        list.innerHTML = '<div class="empty-state" style="padding:12px;">Henüz sohbet yok.</div>';
+        list.innerHTML = `<div class="empty-state" style="padding:12px;">${t('noChatsYet')}</div>`;
         return;
     }
 

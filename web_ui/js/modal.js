@@ -85,7 +85,7 @@ export async function loadModalIndexedDocuments() {
         const data = await response.json();
 
         if (!data.documents || data.documents.length === 0) {
-            list.innerHTML = '<div class="empty-state">Henüz indekslenmiş belge yok.</div>';
+            list.innerHTML = `<div class="empty-state">${t('noIndexedDocs')}</div>`;
             return;
         }
 
@@ -96,7 +96,7 @@ export async function loadModalIndexedDocuments() {
             </div>
         `).join('');
     } catch (e) {
-        list.innerHTML = '<div class="empty-state">Belgeler yüklenemedi.</div>';
+        list.innerHTML = `<div class="empty-state">${t('docsLoadFailed')}</div>`;
     }
 }
 
@@ -121,7 +121,7 @@ export async function uploadModalFile(file, refreshDocBadge) {
         if (!response.ok) throw new Error(data.detail || `HTTP ${response.status}`);
 
         const chunkCount = data.chunks ? data.chunks.length : 0;
-        showToast('success', `${file.name} ${t('toastDocUploaded')} (${chunkCount} parça)!`);
+        showToast('success', `${file.name} ${t('toastDocUploaded')} (${chunkCount} ${t('unitChunks')})!`);
         if (refreshDocBadge) refreshDocBadge();
         loadModalIndexedDocuments();
     } catch (e) {
