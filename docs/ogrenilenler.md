@@ -314,6 +314,61 @@ yakalayamazsınız. Kritik alanlarda (hukuk, sağlık, finans) küçük modelle
 
 ---
 
+## Teknik değişiklikler ve gerekçeleri
+
+Proje boyunca değiştirdiğimiz teknik kararlar ve **neden** değiştirdiğimiz:
+
+**Chat modeli: `qwen3-0.6b` → `qwen2.5-1.5b` (reasoning → instruct).**
+Reasoning modeli yanıttan önce `<think>` bloğu üretiyor ve bu blok token
+bütçesini tüketiyor; sınıra düşünme bloğunun içinde ulaşılınca kullanıcıya
+boş yanıt dönüyordu. 0.5B ise Türkçe dilbilgisinde yetersizdi. 1.5B instruct,
+hedef donanıma sığan ve düşünme bloğu üretmeyen ilk seçenek.
+
+**Embedding CPU'da, chat GPU'da.** 2 GB VRAM'e iki model aynı anda sığmıyor;
+taşma sadece yavaşlatmıyor, çıktıyı da bozuyor. Hangisinin GPU'da kalacağını iş
+yükünün şekli belirledi: embedding sonuçları **kalıcı** (bir parça bir kez
+embed edilir, sonra veritabanında durur) ve sorgu tarafında tek kısa metin
+işlenir. Chat üretimi ise her sorguda token token çalışır ve kullanıcının
+beklediği gecikmenin tamamını oluşturur. Hızlandırmadan en çok fayda gören
+aşama bu. Bedeli: ingestion belirgin şekilde yavaşladı — ama o tek seferlik.
+
+**Saf dense arama → hibrit (dense + BM25).** Türkçenin sondan eklemeli yapısı
+yüzünden "izin" sorgusu "izinleri" geçen parçayı kaçırıyordu. BM25 ayağı,
+kullanıcının yazdığı terimin birebir geçtiği yeri buluyor.
+
+**Skor toplama → RRF ile sıralama birleştirme.** Kosinüs 0–1 arasında,
+BM25 sınırsız ve korpusa bağlı. İki skoru ağırlıklı toplamak, ölçeklerden biri
+kaydığında sessizce bozulan bir sistem üretir. RRF yalnızca **sıralamaları**
+kullandığı için normalizasyon gerektirmiyor.
+
+**Embedding depolama: JSON metin → float32 BLOB.** 1024 boyutlu vektör JSON
+olarak ~20 KB, float32 binary olarak 4 KB. Dörtte bir yer, ayrıştırma maliyeti
+sıfır (`np.frombuffer` doğrudan okuyor).
+
+**Python döngüsü → NumPy matris çarpımı + RAM önbelleği.** Her sorguda tüm
+vektörleri diskten okuyup tek tek karşılaştırmak yerine, tüm embedding'ler tek
+bir matriste tutuluyor ve benzerlik tek çarpımla hesaplanıyor. Ölçüm:
+0.047 ms/sorgu. Bedeli: veri değiştiren her yolda önbelleği geçersiz kılmayı
+unutmamak gerekiyor.
+
+**Harici vektör veritabanı kullanılmadı.** Chroma/FAISS projenin temel
+iddiasını bozardı: tek dosya, sunucusuz, kurulum gerektirmeyen dağıtım. Bu
+ölçekte matris çarpımı zaten milisaniye mertebesinde.
+
+**`FREQUENCY_PENALTY` → deterministik döngü tespiti.** Örnekleme ayarı
+çalışıyordu ama aralığı tehlikeli derecede dardı (0.4 çıktıyı bozuyor, tam 0
+modeli kilitliyor) ve tek bir modele özgüydü. Deterministik kontrol
+model-bağımsız ve **gözlemlenebilir**: döngü yakalandığında log düşüyor.
+
+**Benzerlik eşiğine ikinci bir görev.** Eşiği geçen parça yoksa dil modeli
+**hiç çağrılmıyor**. Aynı mekanizma hem uydurmayı imkânsız kılıyor (model
+devrede değil) hem yanıtı iki kattan fazla hızlandırıyor (6.7 sn / 15 sn).
+
+**Prompt'ta reddetme kuralının konumu.** Ayrıntısı yukarıda: kuralı sona değil
+başa koymak, reddetmeyi 1/4'ten 3/4'e çıkardı.
+
+---
+
 ## Kendi yaptığımız metodolojik hatalar
 
 Dürüstlük adına, ölçüm sürecinde yaptığımız iki hata:
