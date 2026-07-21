@@ -139,6 +139,37 @@ class AuthStore:
                 conn.execute(f"ALTER TABLE users ADD COLUMN {column} {ddl}")
                 logger.info(f"auth.db semasi guncellendi: users.{column} eklendi")
 
+        # Kullanici adlari YAZILIRKEN kucuk harfe cevriliyor, ARANIRKEN de
+        # oyle; ama SQLite karsilastirmasi harf duyarli. Normalize edilmemis
+        # bir satir olusursa (elle duzenleme, eski surum, LDAP aktarimi) o
+        # hesap ARTIK BULUNAMAZ: giris de, parola sifirlama da basarisiz olur
+        # ve kullanici kendi sisteminden kilitlenir. Sahada yasandi.
+        for row in conn.execute("SELECT id, username FROM users").fetchall():
+            normalized = (row["username"] or "").strip().lower()
+            if normalized == row["username"]:
+                continue
+
+            clash = conn.execute(
+                "SELECT id FROM users WHERE username = ? AND id != ?",
+                (normalized, row["id"])
+            ).fetchone()
+            if clash:
+                # Iki satir ayni hesaba cozulur; birlestirme kullanicinin
+                # karari oldugu icin dokunulmaz, yalnizca uyarilir.
+                logger.warning(
+                    f"'{row['username']}' -> '{normalized}' donusturulemedi: "
+                    f"'{normalized}' zaten var (id={clash['id']}). "
+                    f"Hesaplardan birini elle silin veya yeniden adlandirin."
+                )
+                continue
+
+            conn.execute("UPDATE users SET username = ? WHERE id = ?",
+                         (normalized, row["id"]))
+            logger.warning(
+                f"Kullanici adi normallestirildi: '{row['username']}' -> '{normalized}' "
+                f"(bu hesap aksi halde giris yapamazdi)"
+            )
+
 
 class AuthService:
     """Hesap, oturum ve denetim kaydi islemleri."""

@@ -365,3 +365,75 @@ class TestSchemaMigration:
         conn.close()
         assert "failed_attempts" in cols
         assert "locked_until" in cols
+
+
+class TestUsernameNormalizationMigration:
+    """Normalize edilmemis kullanici adlari hesabi erisilemez kilar.
+
+    Sahada yasandi: 'admin' hesabi elle 'Erkan' olarak degistirilince,
+    arama normalize edip 'erkan' aradigi ve SQLite harf duyarli
+    karsilastirdigi icin hesap bulunamaz oldu; kullanici kendi
+    sisteminden kilitlendi.
+    """
+
+    def _make_db_with_username(self, tmp_path, raw_username):
+        import sqlite3
+        from password import hash_password
+        db = str(tmp_path / "auth.db")
+        conn = sqlite3.connect(db)
+        conn.executescript("""
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                is_active INTEGER NOT NULL DEFAULT 1,
+                must_change_password INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL,
+                last_login_at TEXT
+            );
+        """)
+        conn.execute(
+            "INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
+            (raw_username, hash_password("Parola123"), "admin", "2026-01-01T00:00:00")
+        )
+        conn.commit()
+        conn.close()
+        return db
+
+    def test_uppercase_username_becomes_findable(self, tmp_path):
+        db = self._make_db_with_username(tmp_path, "Erkan")
+        service = AuthService(AuthStore(db_path=db))
+
+        assert service.get_user_by_username("Erkan") is not None
+        assert service.get_user_by_username("erkan") is not None
+
+    def test_uppercase_username_can_log_in_after_migration(self, tmp_path):
+        """Asil kirilma noktasi: giris."""
+        db = self._make_db_with_username(tmp_path, "Erkan")
+        service = AuthService(AuthStore(db_path=db))
+
+        assert service.authenticate("Erkan", "Parola123") is not None
+        assert service.authenticate("erkan", "Parola123") is not None
+
+    def test_already_normalized_username_untouched(self, tmp_path):
+        db = self._make_db_with_username(tmp_path, "ayse")
+        service = AuthService(AuthStore(db_path=db))
+        assert service.get_user_by_username("ayse") is not None
+
+    def test_collision_is_reported_not_silently_merged(self, tmp_path):
+        """'Erkan' ve 'erkan' birlikte varsa: veri kaybetme, uyar."""
+        import sqlite3
+        from password import hash_password
+        db = self._make_db_with_username(tmp_path, "Erkan")
+        conn = sqlite3.connect(db)
+        conn.execute(
+            "INSERT INTO users (username, password_hash, role, created_at) VALUES (?,?,?,?)",
+            ("erkan", hash_password("Baska123"), "user", "2026-01-02T00:00:00")
+        )
+        conn.commit()
+        conn.close()
+
+        service = AuthService(AuthStore(db_path=db))
+        # Iki satir da korunmali; hicbiri silinmemeli
+        assert len(service.list_users()) == 2
