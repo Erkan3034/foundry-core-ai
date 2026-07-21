@@ -79,10 +79,24 @@ Her kalibrasyon bu sete ezberleme riski tasiyor.
 **Kapatma:** firma pilotunda gercek kullanici sorularindan ayri bir dogrulama
 seti toplamak; ilk musteri teslimatinin dogal ciktisi.
 
-### Z7 — CI ilk push'ta henuz dogrulanmadi
-`.github/workflows/tests.yml` eklendi (windows-latest) ama GitHub'da hic
-kosmadi; `foundry-local-sdk`'nin temiz runner'da pip ile kurulumu ilk push'ta
-gorulecek. Kirilirsa duzeltmesi kucuktur.
+### Z7 — CI kostu ve GERCEK bir tasinabilirlik hatasi yakaladi ✅ kapandi
+Ilk kosuda 10 test modulu `ModuleNotFoundError` ile toplanamadi.
+**Kok neden:** testler `from config import CONFIG` gibi duz import kullaniyor;
+bu yalnizca proje koku `sys.path`'te ise calisir. Gelistirme boyunca hep
+`python -m pytest` kullanildi - bu bicim calisma dizinini `sys.path`'e ekleyip
+sorunu **gizliyordu**. CI ise normal `pytest` komutunu kullandi ve gizlenen
+hata ortaya cikti.
+
+Etkisi CI ile sinirli degildi: depoyu klonlayip `pytest` yazan **her
+gelistirici** ve kodu inceleyen her firma ayni 10 hatayi alirdi. "159 test
+geciyor" iddiasi tek bir cagirma bicimine bagliymis.
+
+**Cozum:** `pytest.ini` icinde `pythonpath = .`. Uc bicimde de (`pytest`,
+`pytest tests/`, `python -m pytest`) 159/159 dogrulandi.
+
+**Yan bulgu (olumlu):** Ayni kosu, `foundry-local-sdk`'nin temiz bir Windows
+runner'inda `pip install -r requirements.txt` ile sorunsuz kuruldugunu
+kanitladi - onceki commit'te eklenen eksik bagimlilik duzeltmesi dogrulandi.
 
 ### Z8 — Suresi dolan oturum satirlari silinmiyor (dusuk)
 `auth.db` cok yavas buyur. Acilista tek `DELETE ... WHERE expires_at < now`

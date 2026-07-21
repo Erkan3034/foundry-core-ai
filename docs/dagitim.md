@@ -1,6 +1,6 @@
 # Firma Teslim Rehberi
 
-Bu dokuman, Foundry Core AI'nin bir musteri makinesine kurulumunu, guvenli
+Bu dokuman, Foundry Core AI'nin farklı bir  makineye kurulumunu, guvenli
 yapilandirmasini ve isletimini anlatir. Neden Docker kullanilmadigi:
 [ADR-0008](adr/0008-dagitim-stratejisi.md).
 
