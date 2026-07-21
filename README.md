@@ -1,10 +1,28 @@
-# Foundry RAG Assistant
+<p align="center">
+  <img src="brand/logo-mark.svg" width="72" alt="Foundry Core AI">
+</p>
 
-Yerel belgeleriniz uzerinde soru-cevap yapan, **internet baglantisi gerektirmeyen**
-kurumsal AI asistani. Belgeler de, embedding modeli de, dil modeli de cihazda
-calisir; hicbir veri disari cikmaz.
+<h1 align="center">Foundry Core AI</h1>
 
-Microsoft Foundry Local uzerine kurulmustur.
+<p align="center">
+  Yerel belgeleriniz uzerinde soru-cevap yapan, <b>internet baglantisi gerektirmeyen</b> kurumsal AI asistani.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/lisans-MIT-green" alt="MIT">
+  <img src="https://img.shields.io/badge/python-3.11+-blue" alt="Python 3.11+">
+  <img src="https://img.shields.io/badge/testler-159%20gecti-brightgreen" alt="159 test">
+  <img src="https://img.shields.io/badge/cevrimdisi-%25100-orange" alt="Tamamen cevrimdisi">
+</p>
+
+---
+
+Belgeler de, embedding modeli de, dil modeli de cihazda calisir; hicbir veri
+disari cikmaz. Microsoft Foundry Local uzerine kurulmustur.
+
+> Bu proje bagimsiz bir calismadir ve Microsoft ile herhangi bir kurumsal
+> baglantisi yoktur. "Foundry Local" Microsoft'un urunudur; bu proje onu bir
+> calisma zamani olarak kullanir.
 
 ![Web arayuzu](ui.png)
 

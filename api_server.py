@@ -26,6 +26,7 @@ from ingestion import DocumentIngestor
 from rag_engine import RAGEngine
 from auth import AuthStore, AuthService
 
+
 # Logging ayarlari
 logging.basicConfig(
     level=getattr(logging, CONFIG.log_level.upper()),
