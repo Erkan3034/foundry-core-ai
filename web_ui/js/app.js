@@ -2,7 +2,7 @@
 
 import { getLanguage, toggleLanguage, initLanguage, t } from './i18n.js';
 import { apiFetch, isAdmin } from './auth.js';
-import { initSessionGate } from './session-gate.js';
+import { initSessionGate, renderUserChip } from './session-gate.js';
 import { renderUsersPanel } from './users-panel.js';
 import { renderMarkdown, escapeHtml } from './markdown.js';
 import { ICONS, initTheme, toggleTheme, setSidebarOpen, toggleDesktopSidebar, showToast, showPopover, hidePopover } from './ui.js';
@@ -91,6 +91,7 @@ function bindEvents() {
             // dilde kalirdi. Bu yuzden acik olan ne varsa yeniden cizilir.
             if (activePanel) openPanel(activePanel);
             loadChatSessions();
+            renderUserChip();
         });
     }
 

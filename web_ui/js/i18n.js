@@ -58,7 +58,8 @@ export const TRANSLATIONS = {
         suggestion4Query: "İş seyahatinde günlük harcırah ne kadar?",
 
         // --- Roller ve kullanıcı yönetimi ---
-        roleManager: "Yönetici",
+        // "Manager" Turkce'de de kullaniliyor; kurumsal kullanimda yaygin.
+        roleManager: "Manager",
         roleUser: "Kullanıcı",
         tagDisabled: "kapalı",
         userNeverLoggedIn: "hiç giriş yapmadı",
@@ -295,6 +296,13 @@ export function toggleLanguage() {
 
 export function updateDOMTranslations() {
     const dict = TRANSLATIONS[currentLang];
+
+    // <html lang> sabit "tr" idi ve hic guncellenmiyordu. Bu yalnizca
+    // bir etiket degil: CSS text-transform:uppercase harf donusumunu
+    // sayfanin diline gore yapar ve Turkce'de "i" -> "İ" olur. Sonuc:
+    // Ingilizce arayuzde "CHAT HISTORY" yerine "CHAT HİSTORY" goruluyordu.
+    // Ekran okuyucularin telaffuzu da bu etikete bakar.
+    document.documentElement.lang = currentLang;
 
     // Update data-i18n text content
     document.querySelectorAll('[data-i18n]').forEach(el => {

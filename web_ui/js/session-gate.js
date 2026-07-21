@@ -59,7 +59,10 @@ function applyRoleVisibility() {
     });
 }
 
-function renderUserChip() {
+// Disa acik: dil degistiginde yeniden cizilmesi gerekiyor. Kart bir kez
+// giriste olusturuluyordu ve t() cizim aninda calistigi icin, dil
+// degistirilse bile eski dildeki rol etiketiyle kaliyordu.
+export function renderUserChip() {
     const user = getUser();
     const host = el('userChip');
     if (!host || !user) return;
