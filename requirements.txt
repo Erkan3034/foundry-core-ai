@@ -1,0 +1,26 @@
+# Core
+python-dotenv>=1.0.0
+
+# Web Framework
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.9
+
+# Data Processing
+numpy>=1.26.0
+charset-normalizer>=3.0.0
+
+# File Format Support
+PyMuPDF>=1.23.0
+python-docx>=1.1.0
+openpyxl>=3.1.0
+python-pptx>=1.0.0
+
+# Optional: For better text processing
+# nltk>=3.8.0
+# sentence-transformers>=2.5.0
+
+# Development
+pytest>=8.0.0
+pytest-asyncio>=0.23.0
+httpx>=0.27.0

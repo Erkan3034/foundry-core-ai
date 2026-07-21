@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Database
+*.db
+*.db.bak*
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+
+# Foundry Local
+foundry_local_data/
+.foundry/
+
+# Documents (user content)
+documents/*
+!documents/.gitkeep
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+foundry-local-data/
+
+# Referans materyali: ucuncu taraf telifli icerik ve kurum ici program dokumani
+*.pdf
+*.PDF
+
+# Gecici / calisma dosyalari
+kernel.errors.txt
+_list_all.py

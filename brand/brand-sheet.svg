@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" font-family="Inter, 'Segoe UI', system-ui, sans-serif">
+  <defs>
+    <symbol id="mark" viewBox="0 0 56 56">
+      <rect x="0"  y="0"  width="39" height="14" rx="2" fill="currentColor"/>
+      <rect x="42" y="0"  width="14" height="39" rx="2" fill="currentColor"/>
+      <rect x="17" y="42" width="39" height="14" rx="2" fill="currentColor"/>
+      <rect x="0"  y="17" width="14" height="39" rx="2" fill="currentColor"/>
+    </symbol>
+    <symbol id="markcore" viewBox="0 0 56 56">
+      <rect x="0"  y="0"  width="39" height="14" rx="2" fill="currentColor"/>
+      <rect x="42" y="0"  width="14" height="39" rx="2" fill="currentColor"/>
+      <rect x="17" y="42" width="39" height="14" rx="2" fill="currentColor"/>
+      <rect x="0"  y="17" width="14" height="39" rx="2" fill="currentColor"/>
+      <rect x="22" y="22" width="12" height="12" rx="2" fill="currentColor"/>
+    </symbol>
+    <linearGradient id="brandgrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E08A4C"/>
+      <stop offset="1" stop-color="#C0522A"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="900" fill="#0D0E11"/>
+
+  <text x="56" y="60" fill="#ECEDEF" font-size="26" font-weight="600">Foundry Core AI — Marka Levhası</text>
+  <text x="56" y="86" fill="#6B7078" font-size="14">Aperture mark · Foundry Copper paleti</text>
+
+  <!-- ============ MARK TILES ============ -->
+  <rect x="56"  y="118" width="200" height="200" rx="18" fill="#14161A" stroke="#ffffff17"/>
+  <use href="#mark" x="126" y="188" width="60" height="60" color="#F2A26A"/>
+  <text x="156" y="342" fill="#6B7078" font-size="12" text-anchor="middle">koyu zemin</text>
+
+  <rect x="280" y="118" width="200" height="200" rx="18" fill="url(#brandgrad)"/>
+  <use href="#mark" x="350" y="188" width="60" height="60" color="#1A0E06"/>
+  <text x="380" y="342" fill="#6B7078" font-size="12" text-anchor="middle">marka zemini</text>
+
+  <rect x="504" y="118" width="200" height="200" rx="18" fill="#FFFFFF"/>
+  <use href="#mark" x="574" y="188" width="60" height="60" color="#B4551F"/>
+  <text x="604" y="342" fill="#6B7078" font-size="12" text-anchor="middle">açık zemin</text>
+
+  <rect x="728" y="118" width="200" height="200" rx="18" fill="#14161A" stroke="#ffffff17"/>
+  <use href="#markcore" x="798" y="188" width="60" height="60" color="#ECEDEF"/>
+  <text x="828" y="342" fill="#6B7078" font-size="12" text-anchor="middle">varyant: çekirdekli</text>
+
+  <rect x="952" y="118" width="192" height="200" rx="18" fill="#FFFFFF"/>
+  <use href="#mark" x="1018" y="188" width="60" height="60" color="#000000"/>
+  <text x="1048" y="342" fill="#6B7078" font-size="12" text-anchor="middle">mono siyah</text>
+
+  <!-- ============ SCALE TEST ============ -->
+  <text x="56" y="400" fill="#A0A4AD" font-size="13" font-weight="600" letter-spacing="1.2">ÖLÇEK TESTİ</text>
+  <use href="#mark" x="56"  y="418" width="48" height="48" color="#ECEDEF"/>
+  <use href="#mark" x="128" y="426" width="32" height="32" color="#ECEDEF"/>
+  <use href="#mark" x="184" y="430" width="24" height="24" color="#ECEDEF"/>
+  <use href="#mark" x="232" y="434" width="16" height="16" color="#ECEDEF"/>
+  <text x="56"  y="486" fill="#6B7078" font-size="11">48</text>
+  <text x="128" y="486" fill="#6B7078" font-size="11">32</text>
+  <text x="184" y="486" fill="#6B7078" font-size="11">24</text>
+  <text x="232" y="486" fill="#6B7078" font-size="11">16</text>
+
+  <!-- ============ LOCKUP ============ -->
+  <text x="440" y="400" fill="#A0A4AD" font-size="13" font-weight="600" letter-spacing="1.2">KİLİT DÜZEN</text>
+  <rect x="440" y="418" width="48" height="48" rx="12" fill="url(#brandgrad)"/>
+  <use href="#mark" x="452" y="430" width="24" height="24" color="#1A0E06"/>
+  <text x="502" y="443" fill="#ECEDEF" font-size="19" font-weight="600" letter-spacing="-0.3">Foundry Core</text>
+  <text x="502" y="463" fill="#6B7078" font-size="12" letter-spacing="1.6">ENTERPRISE KNOWLEDGE BASE</text>
+
+  <use href="#mark" x="800" y="424" width="36" height="36" color="#F2A26A"/>
+  <text x="850" y="452" fill="#ECEDEF" font-size="23" font-weight="600" letter-spacing="-0.4">Foundry Core</text>
+
+  <!-- ============ DARK PALETTE ============ -->
+  <text x="56" y="546" fill="#A0A4AD" font-size="13" font-weight="600" letter-spacing="1.2">KOYU TEMA</text>
+
+  <g font-size="11">
+    <rect x="56"  y="562" width="126" height="72" rx="10" fill="#0D0E11" stroke="#ffffff17"/>
+    <text x="66" y="654" fill="#ECEDEF" font-size="12" font-weight="600">bg</text>
+    <text x="66" y="670" fill="#6B7078">#0D0E11</text>
+
+    <rect x="196" y="562" width="126" height="72" rx="10" fill="#14161A" stroke="#ffffff17"/>
+    <text x="206" y="654" fill="#ECEDEF" font-size="12" font-weight="600">bg-soft</text>
+    <text x="206" y="670" fill="#6B7078">#14161A</text>
+
+    <rect x="336" y="562" width="126" height="72" rx="10" fill="#1B1E23" stroke="#ffffff17"/>
+    <text x="346" y="654" fill="#ECEDEF" font-size="12" font-weight="600">surface</text>
+    <text x="346" y="670" fill="#6B7078">#1B1E23</text>
+
+    <rect x="476" y="562" width="126" height="72" rx="10" fill="#D9743F"/>
+    <text x="486" y="654" fill="#ECEDEF" font-size="12" font-weight="600">brand</text>
+    <text x="486" y="670" fill="#6B7078">#D9743F</text>
+
+    <rect x="616" y="562" width="126" height="72" rx="10" fill="#F2A26A"/>
+    <text x="626" y="654" fill="#ECEDEF" font-size="12" font-weight="600">brand-hi</text>
+    <text x="626" y="670" fill="#6B7078">#F2A26A</text>
+
+    <rect x="756" y="562" width="126" height="72" rx="10" fill="#3FB950"/>
+    <text x="766" y="654" fill="#ECEDEF" font-size="12" font-weight="600">ok</text>
+    <text x="766" y="670" fill="#6B7078">#3FB950</text>
+
+    <rect x="896" y="562" width="126" height="72" rx="10" fill="#D29922"/>
+    <text x="906" y="654" fill="#ECEDEF" font-size="12" font-weight="600">warn</text>
+    <text x="906" y="670" fill="#6B7078">#D29922</text>
+
+    <rect x="1036" y="562" width="108" height="72" rx="10" fill="#F85149"/>
+    <text x="1046" y="654" fill="#ECEDEF" font-size="12" font-weight="600">bad</text>
+    <text x="1046" y="670" fill="#6B7078">#F85149</text>
+  </g>
+
+  <!-- ============ LIGHT PALETTE ============ -->
+  <text x="56" y="722" fill="#A0A4AD" font-size="13" font-weight="600" letter-spacing="1.2">AÇIK TEMA</text>
+
+  <g font-size="11">
+    <rect x="56"  y="738" width="126" height="72" rx="10" fill="#F7F6F3" stroke="#ffffff17"/>
+    <text x="66" y="830" fill="#ECEDEF" font-size="12" font-weight="600">bg</text>
+    <text x="66" y="846" fill="#6B7078">#F7F6F3</text>
+
+    <rect x="196" y="738" width="126" height="72" rx="10" fill="#FFFFFF" stroke="#ffffff17"/>
+    <text x="206" y="830" fill="#ECEDEF" font-size="12" font-weight="600">surface</text>
+    <text x="206" y="846" fill="#6B7078">#FFFFFF</text>
+
+    <rect x="336" y="738" width="126" height="72" rx="10" fill="#17181B" stroke="#ffffff17"/>
+    <text x="346" y="830" fill="#ECEDEF" font-size="12" font-weight="600">text</text>
+    <text x="346" y="846" fill="#6B7078">#17181B</text>
+
+    <rect x="476" y="738" width="126" height="72" rx="10" fill="#B4551F"/>
+    <text x="486" y="830" fill="#ECEDEF" font-size="12" font-weight="600">brand</text>
+    <text x="486" y="846" fill="#6B7078">#B4551F</text>
+
+    <rect x="616" y="738" width="126" height="72" rx="10" fill="#565A61"/>
+    <text x="626" y="830" fill="#ECEDEF" font-size="12" font-weight="600">text-dim</text>
+    <text x="626" y="846" fill="#6B7078">#565A61</text>
+
+    <rect x="756" y="738" width="126" height="72" rx="10" fill="#1A7F37"/>
+    <text x="766" y="830" fill="#ECEDEF" font-size="12" font-weight="600">ok</text>
+    <text x="766" y="846" fill="#6B7078">#1A7F37</text>
+
+    <rect x="896" y="738" width="126" height="72" rx="10" fill="#9A6700"/>
+    <text x="906" y="830" fill="#ECEDEF" font-size="12" font-weight="600">warn</text>
+    <text x="906" y="846" fill="#6B7078">#9A6700</text>
+
+    <rect x="1036" y="738" width="108" height="72" rx="10" fill="#CF222E"/>
+    <text x="1046" y="830" fill="#ECEDEF" font-size="12" font-weight="600">bad</text>
+    <text x="1046" y="846" fill="#6B7078">#CF222E</text>
+  </g>
+</svg>

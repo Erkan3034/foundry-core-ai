@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark light">
+    <meta name="description" content="Belgeleriniz üzerinde çalışan, verileri cihazınızda tutan yerel AI asistanı.">
+    <title>Foundry Core AI</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="style.css?v=1.6.0">
+</head>
+
+<body>
+    <!-- ============ Kimlik Dogrulama Ekranlari ============
+         Oturum dogrulanana kadar uygulama gizli kalir; boylece giris yapmamis
+         bir kullanici arayuzun icerigini bir an bile goremez. -->
+    <div class="auth-gate" id="authGate" hidden>
+        <div class="auth-card">
+            <div class="auth-brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 56 56" width="26" height="26" fill="currentColor">
+                        <rect x="0" y="0" width="39" height="14" rx="2" />
+                        <rect x="42" y="0" width="14" height="39" rx="2" />
+                        <rect x="17" y="42" width="39" height="14" rx="2" />
+                        <rect x="0" y="17" width="14" height="39" rx="2" />
+                    </svg>
+                </div>
+                <span class="brand-name">Foundry Core AI</span>
+            </div>
+
+            <!-- Giris -->
+            <form class="auth-form" id="loginForm">
+                <h1 class="auth-title">Giriş yapın</h1>
+                <p class="auth-sub">Kurumsal bilgi asistanına erişmek için hesabınızla giriş yapın.</p>
+
+                <label class="auth-label" for="loginUsername">Kullanıcı adı</label>
+                <input class="auth-input" id="loginUsername" name="username" autocomplete="username"
+                    required autofocus>
+
+                <label class="auth-label" for="loginPassword">Parola</label>
+                <input class="auth-input" id="loginPassword" name="password" type="password"
+                    autocomplete="current-password" required>
+
+                <p class="auth-error" id="loginError" role="alert" hidden></p>
+                <button class="auth-submit" type="submit" id="loginSubmit">Giriş yap</button>
+                <p class="auth-hint">Hesabınız yoksa sistem yöneticinizle iletişime geçin.</p>
+            </form>
+
+            <!-- Zorunlu parola degisimi -->
+            <form class="auth-form" id="passwordForm" hidden>
+                <h1 class="auth-title">Parolanızı belirleyin</h1>
+                <p class="auth-sub">Devam etmeden önce size verilen geçici parolayı değiştirmelisiniz.</p>
+
+                <label class="auth-label" for="oldPassword">Mevcut parola</label>
+                <input class="auth-input" id="oldPassword" type="password"
+                    autocomplete="current-password" required>
+
+                <label class="auth-label" for="newPassword">Yeni parola</label>
+                <input class="auth-input" id="newPassword" type="password"
+                    autocomplete="new-password" minlength="8" required>
+
+                <label class="auth-label" for="newPassword2">Yeni parola (tekrar)</label>
+                <input class="auth-input" id="newPassword2" type="password"
+                    autocomplete="new-password" minlength="8" required>
+
+                <p class="auth-error" id="passwordError" role="alert" hidden></p>
+                <button class="auth-submit" type="submit" id="passwordSubmit">Parolayı değiştir</button>
+                <p class="auth-hint">En az 8 karakter olmalıdır.</p>
+            </form>
+        </div>
+    </div>
+    <div class="aurora" aria-hidden="true">
+        <div class="aurora-blob aurora-a"></div>
+        <div class="aurora-blob aurora-b"></div>
+    </div>
+
+    <div class="app" id="appContainer" hidden>
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <!-- ============ Sidebar ============ -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 56 56" width="22" height="22" fill="currentColor">
+                            <rect x="0" y="0" width="39" height="14" rx="2" />
+                            <rect x="42" y="0" width="14" height="39" rx="2" />
+                            <rect x="17" y="42" width="39" height="14" rx="2" />
+                            <rect x="0" y="17" width="14" height="39" rx="2" />
+                        </svg>
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-name">Foundry Core AI</span>
+                    </div>
+                </div>
+                <button class="icon-btn sidebar-close" id="sidebarCloseBtn" aria-label="Menüyü kapat">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <button class="new-chat-btn" id="btnNewChat">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+                <span data-i18n="newChat">Yeni Sohbet</span>
+            </button>
+
+            <!-- Arama Alanı -->
+            <div class="search-box">
+                <svg class="search-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                </svg>
+                <input type="text" id="historySearch" data-i18n-placeholder="historySearchPlaceholder" placeholder="Sohbetlerde ara…" aria-label="Sohbetlerde ara">
+            </div>
+
+            <nav class="sidebar-nav" aria-label="Ana gezinme">
+                <div class="nav-section nav-section-scroll">
+                    <div class="nav-title" data-i18n="historyTitle">Sohbet Geçmişi</div>
+                    <div class="history-list" id="chatHistoryList">
+                        <!-- Dinamik sohbet geçmişi -->
+                    </div>
+                </div>
+
+                <div class="nav-section nav-section-fixed">
+                    <div class="nav-title" data-i18n="navManagement">Yönetim</div>
+                    <button type="button" class="nav-item" id="navDocuments" data-nav="documents">
+                        <svg class="icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                            stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M9 13h6M9 17h6" />
+                        </svg>
+                        <span data-i18n="navDocs">Bilgi Tabanı</span>
+                        <span class="nav-badge" id="docCountBadge" hidden>0</span>
+                    </button>
+                    <button type="button" class="nav-item admin-only" id="btnOpenUploadModal" hidden>
+                        <svg class="icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                            stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <path d="M17 8l-5-5-5 5" />
+                            <path d="M12 3v12" />
+                        </svg>
+                        <span data-i18n="navUploadPopup">Belge Ekle</span>
+                    </button>
+                    <button type="button" class="nav-item admin-only" id="navUsers" data-nav="users" hidden>
+                        <span class="icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </span>
+                        <span>Kullanıcılar</span>
+                    </button>
+                    <button type="button" class="nav-item admin-only" id="navSettings" data-nav="settings" hidden>
+                        <svg class="icon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                            stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 20v-6M12 8V4M6 20v-4M6 12V4M18 20v-8M18 8V4" />
+                            <circle cx="12" cy="11" r="2" />
+                            <circle cx="6" cy="14" r="2" />
+                            <circle cx="18" cy="10" r="2" />
+                        </svg>
+                        <span data-i18n="navSettings">Sistem Durumu</span>
+                    </button>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer" style="border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                <div class="user-chip" id="userChip"><!-- oturum bilgisi --></div>
+                <button class="icon-btn" id="btnLogout" type="button" aria-label="Çıkış yap" title="Çıkış yap">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <path d="m16 17 5-5-5-5M21 12H9" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="status-chip" id="statusBadge" role="status">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="status-label" id="statusLabel">Bağlanıyor…</span>
+                </div>
+                <button class="icon-btn theme-toggle" id="themeToggle" type="button" aria-label="Temayı değiştir"
+                    title="Temayı değiştir">
+                    <svg class="icon-sun" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4" />
+                        <path
+                            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+                <button class="pill-btn lang-toggle-btn" id="langToggle" type="button" title="Dil Değiştir (Language)">
+                    <span id="langText">TR</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ============ Main ============ -->
+        <main class="main">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="icon-btn sidebar-open-btn" id="sidebarOpenBtn" aria-label="Menüyü aç">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 7h16M4 12h16M4 17h16" />
+                        </svg>
+                    </button>
+                    <button class="icon-btn desktop-sidebar-toggle" id="btnToggleSidebar" aria-label="Menüyü Daralt/Aç"
+                        title="Sol Menüyü Kapat/Aç">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor"
+                            stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <path d="M9 3v18" />
+                        </svg>
+                    </button>
+                    <div class="topbar-title">
+                        <span id="pageTitle" data-i18n="pageTitle">Sohbet</span>
+                        <span class="topbar-sub" id="topbarSub" data-i18n="topbarSub">Kurumsal Bilgi Tabanı</span>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button class="pill-btn" id="btnToggleDocs">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                            stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                            <path d="M14 2v6h6" />
+                        </svg>
+                        <span data-i18n="navDocs">Bilgi Tabanı</span>
+                    </button>
+                    <button class="pill-btn pill-primary admin-only" id="btnUploadModalTop" hidden>
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                            stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19V5M5 12l7-7 7 7" />
+                        </svg>
+                        <span data-i18n="btnUpload">Yükle</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="chat-scroll" id="chatScroll">
+                <div class="chat-column" id="chatMessages" role="log" aria-live="polite">
+                    <div class="hero" id="welcomeScreen">
+                        <div class="hero-orb" aria-hidden="true">
+                            <svg viewBox="0 0 56 56" width="30" height="30" fill="currentColor">
+                                <rect x="0" y="0" width="39" height="14" rx="2" />
+                                <rect x="42" y="0" width="14" height="39" rx="2" />
+                                <rect x="17" y="42" width="39" height="14" rx="2" />
+                                <rect x="0" y="17" width="14" height="39" rx="2" />
+                            </svg>
+                        </div>
+                        <h1 class="hero-title"><span class="grad-text">Foundry</span> Bilgi Asistanı</h1>
+                        <p class="hero-sub">Kurumsal belgeleriniz ve politika dokümanlarınız üzerinde arama yapın.</p>
+                        <div class="suggestions" id="suggestions">
+                            <button type="button" class="suggestion"
+                                data-quick="Yıllık izin hakkım kaç gün ve nasıl talep ederim?">
+                                <span class="suggestion-icon">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                                        <path d="M16 2v4M8 2v4M3 10h18" />
+                                    </svg>
+                                </span>
+                                <span class="suggestion-body">
+                                    <span class="suggestion-title">İzin hakları</span>
+                                    <span class="suggestion-desc">Yıllık izin süresi ve talep süreci</span>
+                                </span>
+                            </button>
+                            <button type="button" class="suggestion" data-quick="VPN bağlantısı nasıl kurulur?">
+                                <span class="suggestion-icon">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="10" rx="2" />
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                    </svg>
+                                </span>
+                                <span class="suggestion-body">
+                                    <span class="suggestion-title">VPN kurulumu</span>
+                                    <span class="suggestion-desc">SecureConnect adım adım</span>
+                                </span>
+                            </button>
+                            <button type="button" class="suggestion"
+                                data-quick="Yemek kartına aylık ne kadar yükleme yapılıyor?">
+                                <span class="suggestion-icon">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="2" y="5" width="20" height="14" rx="2" />
+                                        <path d="M2 10h20" />
+                                    </svg>
+                                </span>
+                                <span class="suggestion-body">
+                                    <span class="suggestion-title">Yan haklar</span>
+                                    <span class="suggestion-desc">Yemek kartı ve sigorta detayları</span>
+                                </span>
+                            </button>
+                            <button type="button" class="suggestion"
+                                data-quick="İş seyahatinde günlük harcırah ne kadar?">
+                                <span class="suggestion-icon">
+                                    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor"
+                                        stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <path
+                                            d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+                                    </svg>
+                                </span>
+                                <span class="suggestion-body">
+                                    <span class="suggestion-title">İş seyahati</span>
+                                    <span class="suggestion-desc">Harcırah ve konaklama limitleri</span>
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="composer-area">
+                <div class="composer" id="composer">
+                    <textarea class="composer-input" id="chatInput" placeholder="Belgeleriniz hakkında bir soru sorun…"
+                        rows="1" aria-label="Sohbet mesajı"></textarea>
+                    <button class="send-btn" id="sendBtn" aria-label="Gönder" disabled>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                            stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19V5M5 12l7-7 7 7" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="composer-hints">
+                    <span><kbd>Enter</kbd> gönder · <kbd>Shift+Enter</kbd> yeni satır</span>
+                    <span id="statusText">Hazır</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- ============ Side Panel ============ -->
+        <aside class="side-panel" id="sidePanel" aria-hidden="true">
+            <div class="panel-header">
+                <span id="panelTitle">Bilgi Tabanı</span>
+                <button class="icon-btn" id="panelCloseBtn" aria-label="Paneli kapat">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="panel-body" id="panelBody"></div>
+        </aside>
+    </div>
+
+    <!-- ============ Upload Document Modal ============ -->
+    <div class="modal-overlay" id="uploadModal" aria-hidden="true">
+        <div class="modal-card" role="dialog" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <div class="modal-title-group">
+                    <span class="modal-icon">📄</span>
+                    <h2 class="modal-title" id="modalTitle">Upload Document</h2>
+                </div>
+                <button class="modal-close-btn" id="modalCloseBtn" aria-label="Kapat">&times;</button>
+            </div>
+            <p class="modal-sub">Add a <strong>.txt, .md, .pdf, .docx</strong> file to the local knowledge base. It will
+                be chunked and indexed immediately.</p>
+
+            <div class="dropzone" id="modalDropzone">
+                <div class="dropzone-content" id="dropzoneContent">
+                    <div class="dropzone-folder-icon">📂</div>
+                    <div class="dropzone-text">Drop file here or <span class="dropzone-link">click to browse</span>
+                    </div>
+                </div>
+                <div class="dropzone-loader" id="dropzoneLoader" style="display:none;">
+                    <div class="modal-spinner"></div>
+                    <div class="loader-status-text" id="loaderStatusText">Dosya yükleniyor ve indeksleniyor…</div>
+                </div>
+                <input type="file" id="modalFileInput" class="visually-hidden"
+                    accept=".txt,.md,.pdf,.docx,.xlsx,.pptx,.csv,.json,.xml,.html,.log,.rst">
+            </div>
+
+            <div class="modal-indexed-section">
+                <div class="modal-indexed-title" id="toggleIndexedList">
+                    <span class="chevron">▼</span> Indexed Documents
+                </div>
+                <div class="modal-indexed-list" id="modalIndexedList">
+                    <!-- Dinamik indeksli dokümanlar ve yeşil chunk rozetleri -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Hover Popover Container -->
+    <div class="hover-popover" id="hoverPopover" aria-hidden="true"></div>
+
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="js/app.js?v=1.5.0"></script>
+</body>
+
+</html>
