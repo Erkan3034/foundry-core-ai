@@ -8,7 +8,7 @@ embedding CPU'da) bos sistemde olculmustur ve tekrarlanabilir cikmistir
 
 | Olcum | Sonuc | Kaynak |
 |---|---|---|
-| Birim/entegrasyon testleri | **159/159 gecti** (23 sn) | `pytest tests/` |
+| Birim/entegrasyon testleri | **166/166 gecti** (23 sn) | `pytest tests/` |
 | Yanit kalitesi (genel) | **%74** (14/19 otomatik puanlanan) | `eval/RESULTS.md` |
 | — cevaplanabilir sorular | 11/12 | " |
 | — cevaplanamaz (reddetme) | 3/4 | " |
@@ -28,7 +28,7 @@ embedding CPU'da) bos sistemde olculmustur ve tekrarlanabilir cikmistir
 - `API_HOST=0.0.0.0` acilista loglara uyari basiyor.
 - Bos sorgu, alakasiz sorgu ve model dongusu senaryolari coktumuyor
   (eval `kenar_durum` ve iki kosuda sahada tetiklenen dongu kesici).
-- Kurulum betigi son adimda 159 testi kosarak kendini dogruluyor.
+- Kurulum betigi son adimda 166 testi kosarak kendini dogruluyor.
 
 ## Zayifliklar ve kapatma yollari (onem sirasiyla)
 
@@ -53,12 +53,22 @@ buyuk kazanc; ikincisi `MAX_CONTEXT_LENGTH`/`TOP_K` dusurmek (kalite etkisi
 eval ile olculerek). Streaming sayesinde algi kismen yonetiliyor ama 15 sn
 "dusunuyor" ekrani prod'da sikayete doner. Donanim onerisi `docs/dagitim.md`'de.
 
-### Z3 — Login'de kaba kuvvet kilidi yok
-scrypt maliyeti (~60ms/deneme) tek fren; LAN'daki biri sinirsiz deneyebilir.
-Denemeler denetim kaydina dusuyor ama otomatik engel yok.
-**Kapatma:** kullanici basina N basarisiz denemede artan gecikme / gecici
-kilit (`auth.authenticate` tek nokta, ~30 satir). TLS vekil onerisi zaten
-ADR-0006'da.
+### Z3 — Login'de kaba kuvvet kilidi ✅ kapandi
+Onceden scrypt maliyeti (~60 ms/deneme) tek frendi; LAN'daki biri sinirsiz
+deneyebilirdi (~15 deneme/sn, gun boyunca milyonu asar).
+
+**Cozum:** 5 basarisiz denemeden sonra hesap 5 dakika kilitlenir
+(`MAX_FAILED_ATTEMPTS` / `LOCKOUT_SECONDS`). Basarili giris sayaci sifirlar.
+Kilit, parola dogrulamasindan **once** kontrol edilir - kilitliyken dogru
+parola da kabul edilmez, aksi halde kilit bir sey ifade etmezdi. Kilitli
+hesapta da hash maliyeti odenir ki kilidin varligi yanit suresinden
+anlasilmasin. Kilitlenme `account_locked` olarak denetim kaydina yazilir.
+
+**Bilincli takas:** Kilit KISA (5 dk) ve kalici degil. Kalici kilit,
+saldirganin bir calisani surekli yanlis parola girerek sistem disi
+birakmasina (hizmet engelleme) izin verirdi.
+
+Testler: `TestBruteForceLockout` (4 test).
 
 ### Z4 — Dongu kesici uretimden SONRA calisiyor
 T01'de model 1024 token'lik butceyi dongude yakti (72 sn), kesici cikti
@@ -88,19 +98,31 @@ sorunu **gizliyordu**. CI ise normal `pytest` komutunu kullandi ve gizlenen
 hata ortaya cikti.
 
 Etkisi CI ile sinirli degildi: depoyu klonlayip `pytest` yazan **her
-gelistirici** ve kodu inceleyen her firma ayni 10 hatayi alirdi. "159 test
+gelistirici** ve kodu inceleyen her firma ayni 10 hatayi alirdi. "166 test
 geciyor" iddiasi tek bir cagirma bicimine bagliymis.
 
 **Cozum:** `pytest.ini` icinde `pythonpath = .`. Uc bicimde de (`pytest`,
-`pytest tests/`, `python -m pytest`) 159/159 dogrulandi.
+`pytest tests/`, `python -m pytest`) 166/166 dogrulandi.
 
 **Yan bulgu (olumlu):** Ayni kosu, `foundry-local-sdk`'nin temiz bir Windows
 runner'inda `pip install -r requirements.txt` ile sorunsuz kuruldugunu
 kanitladi - onceki commit'te eklenen eksik bagimlilik duzeltmesi dogrulandi.
 
-### Z8 — Suresi dolan oturum satirlari silinmiyor (dusuk)
-`auth.db` cok yavas buyur. Acilista tek `DELETE ... WHERE expires_at < now`
-yeterli.
+### Z8 — Suresi dolan oturum satirlari ✅ kapandi
+`validate_token` yalnizca DOKUNULAN token'i temizliyordu; bir daha hic
+kullanilmayan oturumlar tabloda birikiyordu.
+
+**Cozum:** `purge_expired_sessions()`, sunucu acilisinda cagriliyor.
+Teorik bir sorun degilmis: bu makinedeki gercek `auth.db` uzerinde ilk
+calistirmada **26 olu oturum satiri** temizlendi.
+
+Testler: `TestSessionPurge` (2 test).
+
+### Sema gecisi (yeni)
+Z3 icin `users` tablosuna iki kolon eklendi. Musteri makinesinde veri kaybi
+olmadan guncelleme yapilabilmesi icin `AuthStore._migrate` acilista eksik
+kolonlari `ALTER TABLE` ile ekliyor. Gercek `auth.db` uzerinde dogrulandi
+(2 kullanici korundu) ve `TestSchemaMigration` ile test edildi.
 
 ## Karar: hangi senaryoda prod-ready?
 

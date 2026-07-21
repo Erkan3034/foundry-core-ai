@@ -35,6 +35,7 @@ Destekleyici kararlar:
 | Ilk admin parolasi `secrets.token_urlsafe(12)` ile **rastgele** uretilir | Sabit varsayilan parola (`admin/admin`) ile teslim edilen sistemler pratikte hic degistirilmiyor. |
 | `auth.db`, `knowledge_base.db`'den **ayri dosya** | `/reset` bilgi tabanini siler; hesaplari ve denetim kaydini silmemeli. |
 | Denetim kaydi (audit log) | Kurumsal ortamda "kim neyi ne zaman degistirdi" sorusu cevaplanabilir olmali. |
+| 5 basarisiz denemede **5 dakikalik** kilit | scrypt tek basina yeterli fren degil (~15 deneme/sn ag uzerinden). Kilit KISA tutuldu: kalici kilit, saldirganin bir calisani surekli yanlis parola girerek sistem disi birakmasina izin verirdi. |
 
 ## Sonuclar
 

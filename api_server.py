@@ -99,6 +99,10 @@ async def lifespan(app: FastAPI):
             f"{banner}"
         )
 
+    purged = _auth_service.purge_expired_sessions()
+    if purged:
+        logger.info(f"Suresi dolmus {purged} oturum temizlendi")
+
     if CONFIG.api_host == "0.0.0.0":
         logger.warning(
             "API_HOST=0.0.0.0 - servis TUM ag arayuzlerine acik. "

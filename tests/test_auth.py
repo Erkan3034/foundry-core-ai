@@ -251,3 +251,117 @@ class TestStorageSeparation:
         assert "chunks" not in names
         assert "documents" not in names
         assert {"users", "sessions", "audit_log"} <= names
+
+
+class TestBruteForceLockout:
+    """Kaba kuvvet korumasi (Z3).
+
+    scrypt tek basina yeterli fren degil; N basarisiz denemeden sonra hesap
+    kisa sureligine kilitlenmeli.
+    """
+
+    def test_locks_account_after_repeated_failures(self, auth):
+        from auth import MAX_FAILED_ATTEMPTS
+        auth.create_user("ayse", "DogruParola123")
+
+        for _ in range(MAX_FAILED_ATTEMPTS):
+            assert auth.authenticate("ayse", "yanlis") is None
+
+        # Kilitliyken DOGRU parola da reddedilmeli; aksi halde kilit
+        # hicbir sey ifade etmezdi.
+        assert auth.authenticate("ayse", "DogruParola123") is None
+
+    def test_successful_login_resets_counter(self, auth):
+        from auth import MAX_FAILED_ATTEMPTS
+        auth.create_user("ayse", "DogruParola123")
+
+        for _ in range(MAX_FAILED_ATTEMPTS - 1):
+            auth.authenticate("ayse", "yanlis")
+
+        # Esige ulasmadan basarili giris sayaci sifirlamali
+        assert auth.authenticate("ayse", "DogruParola123") is not None
+
+        for _ in range(MAX_FAILED_ATTEMPTS - 1):
+            auth.authenticate("ayse", "yanlis")
+        assert auth.authenticate("ayse", "DogruParola123") is not None
+
+    def test_lock_expires_and_allows_login(self, auth, monkeypatch):
+        import auth as auth_module
+        from auth import MAX_FAILED_ATTEMPTS
+        auth.create_user("ayse", "DogruParola123")
+
+        # Kilit suresini olculebilir sekilde kisalt
+        monkeypatch.setattr(auth_module, "LOCKOUT_SECONDS", -1)
+
+        for _ in range(MAX_FAILED_ATTEMPTS):
+            auth.authenticate("ayse", "yanlis")
+
+        # Suresi gecmis kilit girisi engellememeli
+        assert auth.authenticate("ayse", "DogruParola123") is not None
+
+    def test_lockout_is_recorded_in_audit_log(self, auth):
+        from auth import MAX_FAILED_ATTEMPTS
+        auth.create_user("ayse", "DogruParola123")
+        for _ in range(MAX_FAILED_ATTEMPTS):
+            auth.authenticate("ayse", "yanlis")
+
+        actions = [entry["action"] for entry in auth.get_audit_log()]
+        assert "account_locked" in actions
+
+
+class TestSessionPurge:
+    """Suresi dolmus oturumlarin temizlenmesi (Z8)."""
+
+    def test_purges_expired_sessions(self, auth):
+        auth.create_user("ayse", "Parola123")
+        expired = auth.authenticate("ayse", "Parola123", ttl_seconds=-1)
+        assert expired is not None
+
+        assert auth.purge_expired_sessions() >= 1
+        assert auth.validate_token(expired) is None
+
+    def test_keeps_live_sessions(self, auth):
+        auth.create_user("ayse", "Parola123")
+        live = auth.authenticate("ayse", "Parola123", ttl_seconds=3600)
+
+        auth.purge_expired_sessions()
+        assert auth.validate_token(live) is not None
+
+
+class TestSchemaMigration:
+    """Eski auth.db dosyalari veri kaybi olmadan guncellenmeli."""
+
+    def test_migrates_old_schema_without_data_loss(self, tmp_path):
+        import sqlite3
+        db = str(tmp_path / "old.db")
+
+        # Kilitleme kolonlari OLMAYAN eski sema
+        conn = sqlite3.connect(db)
+        conn.executescript("""
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                role TEXT NOT NULL DEFAULT 'user',
+                is_active INTEGER NOT NULL DEFAULT 1,
+                must_change_password INTEGER NOT NULL DEFAULT 1,
+                created_at TEXT NOT NULL,
+                last_login_at TEXT
+            );
+            INSERT INTO users (username, password_hash, role, created_at)
+            VALUES ('eski_kullanici', 'hash', 'admin', '2026-01-01T00:00:00');
+        """)
+        conn.commit()
+        conn.close()
+
+        # AuthStore acilisi semayi tasimali
+        service = AuthService(AuthStore(db_path=db))
+
+        users = service.list_users()
+        assert any(u["username"] == "eski_kullanici" for u in users)
+
+        conn = sqlite3.connect(db)
+        cols = {r[1] for r in conn.execute("PRAGMA table_info(users)")}
+        conn.close()
+        assert "failed_attempts" in cols
+        assert "locked_until" in cols

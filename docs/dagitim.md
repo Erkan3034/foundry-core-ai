@@ -24,7 +24,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1 -PreloadModels
 
 Betik sirasiyla: Python 3.11+ ve Foundry Local'i dogrular (yoksa winget ile
 kurar), sanal ortami kurar, bagimliliklari `requirements.lock`'tan sabit
-surumlerle yukler, `.env` olusturur, **159 birim testini calistirarak kurulumu
+surumlerle yukler, `.env` olusturur, **166 birim testini calistirarak kurulumu
 dogrular** ve `-PreloadModels` verildiyse modelleri (~2-3 GB) indirir.
 
 Testler gectiyse kurulum saglamdir. Gunluk baslatma: `start.bat`

@@ -32,6 +32,19 @@ ROLES = ("admin", "user")
 MIN_PASSWORD_LENGTH = 8
 DEFAULT_SESSION_TTL_SECONDS = 12 * 3600  # bir is gunu
 
+# Kaba kuvvet korumasi.
+#
+# scrypt tek basina bir fren (~60 ms/deneme) ama yeterli degil: ag uzerinden
+# saniyede ~15 deneme, gun boyunca milyonu asar. N basarisiz denemeden sonra
+# hesap KISA SURELIGINE kilitlenir.
+#
+# Kilit suresi bilerek kisa tutuldu: kalici kilit, saldirganin bir calisani
+# surekli yanlis parola girerek sistem disi birakmasina (hizmet engelleme)
+# izin verirdi. 5 dakika, kaba kuvveti pratikte imkansiz kilarken mesru
+# kullaniciyi yalnizca bir kahve molasi kadar bekletir.
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_SECONDS = 300
+
 # Kullanici bulunamadiginda da dogrulama maliyeti odenir ki saldirgan
 # yanit suresinden kullanici adinin var olup olmadigini anlayamasin.
 _DUMMY_HASH = hash_password("dummy-password-for-timing-equalization")
@@ -80,7 +93,9 @@ class AuthStore:
                     is_active INTEGER NOT NULL DEFAULT 1,
                     must_change_password INTEGER NOT NULL DEFAULT 1,
                     created_at TEXT NOT NULL,
-                    last_login_at TEXT
+                    last_login_at TEXT,
+                    failed_attempts INTEGER NOT NULL DEFAULT 0,
+                    locked_until TEXT
                 );
 
                 CREATE TABLE IF NOT EXISTS sessions (
@@ -103,7 +118,26 @@ class AuthStore:
                 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
                 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log(created_at);
             """)
+            self._migrate(conn)
             conn.commit()
+
+    @staticmethod
+    def _migrate(conn):
+        """Var olan auth.db dosyalarini guncel semaya tasi.
+
+        Yeni kurulumda CREATE TABLE kolonlari zaten iceriyor; bu adim
+        yalnizca onceki surumden gelen dosyalar icindir. Musteri makinesinde
+        veri kaybi olmadan guncelleme yapilabilmesi icin gereklidir.
+        """
+        existing = {r["name"] for r in conn.execute("PRAGMA table_info(users)")}
+
+        for column, ddl in (
+            ("failed_attempts", "INTEGER NOT NULL DEFAULT 0"),
+            ("locked_until", "TEXT"),
+        ):
+            if column not in existing:
+                conn.execute(f"ALTER TABLE users ADD COLUMN {column} {ddl}")
+                logger.info(f"auth.db semasi guncellendi: users.{column} eklendi")
 
 
 class AuthService:
@@ -222,8 +256,18 @@ class AuthService:
             self._log(row["id"], username, "login_failed", "hesap kapali")
             return None
 
+        # Kilit kontrolu parola dogrulamasindan ONCE: kilitliyken dogru parola
+        # da kabul edilmez, aksi halde kilit bir sey ifade etmezdi.
+        locked_until = row["locked_until"]
+        if locked_until and datetime.fromisoformat(locked_until) > _now():
+            # Yanit suresi normal basarisiz girisle ayni kalsin diye hash
+            # maliyeti yine odenir; kilidin varligi zamanlamadan anlasilmasin.
+            verify_password(password or "x", _DUMMY_HASH)
+            self._log(row["id"], username, "login_failed", "hesap gecici kilitli")
+            return None
+
         if not verify_password(password, row["password_hash"]):
-            self._log(row["id"], username, "login_failed", "hatali parola")
+            self._register_failed_attempt(row, username)
             return None
 
         token = secrets.token_urlsafe(32)
@@ -235,14 +279,58 @@ class AuthService:
                 "VALUES (?, ?, ?, ?)",
                 (_hash_token(token), row["id"], _now().isoformat(), expires.isoformat())
             )
+            # Basarili giris sayaci sifirlar ve varsa kilidi kaldirir.
             conn.execute(
-                "UPDATE users SET last_login_at = ? WHERE id = ?",
+                "UPDATE users SET last_login_at = ?, failed_attempts = 0, "
+                "locked_until = NULL WHERE id = ?",
                 (_now().isoformat(), row["id"])
             )
             conn.commit()
 
         self._log(row["id"], username, "login", None)
         return token
+
+    def _register_failed_attempt(self, row, username: str):
+        """Basarisiz denemeyi say; esige ulasilinca hesabi gecici kilitle."""
+        attempts = (row["failed_attempts"] or 0) + 1
+
+        if attempts >= MAX_FAILED_ATTEMPTS:
+            locked_until = _now() + timedelta(seconds=LOCKOUT_SECONDS)
+            with self.store._connect() as conn:
+                conn.execute(
+                    "UPDATE users SET failed_attempts = 0, locked_until = ? WHERE id = ?",
+                    (locked_until.isoformat(), row["id"])
+                )
+                conn.commit()
+            logger.warning(
+                f"'{username}' hesabi {MAX_FAILED_ATTEMPTS} basarisiz denemeden sonra "
+                f"{LOCKOUT_SECONDS // 60} dakika kilitlendi"
+            )
+            self._log(row["id"], username, "account_locked",
+                      f"{MAX_FAILED_ATTEMPTS} basarisiz deneme")
+            return
+
+        with self.store._connect() as conn:
+            conn.execute(
+                "UPDATE users SET failed_attempts = ? WHERE id = ?",
+                (attempts, row["id"])
+            )
+            conn.commit()
+        self._log(row["id"], username, "login_failed",
+                  f"hatali parola ({attempts}/{MAX_FAILED_ATTEMPTS})")
+
+    def purge_expired_sessions(self) -> int:
+        """Suresi dolmus oturum satirlarini sil; silinen sayisini dondur.
+
+        validate_token yalnizca DOKUNULAN token'i temizler; bir daha hic
+        kullanilmayan oturumlar tabloda birikirdi. Acilista bir kez cagrilir.
+        """
+        with self.store._connect() as conn:
+            cursor = conn.execute(
+                "DELETE FROM sessions WHERE expires_at <= ?", (_now().isoformat(),)
+            )
+            conn.commit()
+            return cursor.rowcount
 
     def validate_token(self, token: str) -> Optional[dict]:
         """Token'i kullaniciya cozumle. Gecersiz/suresi dolmussa None."""

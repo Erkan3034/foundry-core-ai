@@ -3,7 +3,7 @@
 ## Neden ayri bir sey
 
 `pytest tests/` **kodun** dogru calistigini gosterir. Gostermedigi sey:
-asistanin **dogru cevap verdigi**. Bu iki soru bagimsizdir - 159 testi gecen
+asistanin **dogru cevap verdigi**. Bu iki soru bagimsizdir - 166 testi gecen
 bir RAG sistemi pekala her soruya bilgi uydurabilir.
 
 Bu klasor ikincisini olcer.

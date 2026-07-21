@@ -11,7 +11,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/lisans-MIT-green" alt="MIT">
   <img src="https://img.shields.io/badge/python-3.11+-blue" alt="Python 3.11+">
-  <img src="https://img.shields.io/badge/testler-159%20gecti-brightgreen" alt="159 test">
+  <img src="https://img.shields.io/badge/testler-166%20gecti-brightgreen" alt="166 test">
   <img src="https://img.shields.io/badge/cevrimdisi-%25100-orange" alt="Tamamen cevrimdisi">
 </p>
 
@@ -76,7 +76,7 @@ powershell -ExecutionPolicy Bypass -File install.ps1 -PreloadModels
 
 Betik her seyi yapar: Python ve Foundry Local'i dogrular (yoksa winget ile
 kurar), sanal ortami olusturur, bagimliliklari sabitlenmis surumlerle
-(`requirements.lock`) yukler, `.env` olusturur ve **159 testi calistirarak
+(`requirements.lock`) yukler, `.env` olusturur ve **166 testi calistirarak
 kurulumu dogrular**. `-PreloadModels` modelleri (~2-3 GB) kurulumda indirir.
 Gunluk baslatma: `start.bat`.
 
@@ -163,7 +163,7 @@ aynidir.
 Iki ayri sey olculur:
 
 ```bash
-pytest tests/            # Kod dogru mu?      -> 155 test
+pytest                   # Kod dogru mu?      -> 166 test
 python eval/run_eval.py  # Yanitlar dogru mu? -> eval/RESULTS.md
 ```
 
