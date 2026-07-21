@@ -44,5 +44,5 @@ kullanmayi saglar.
 
 ## Acik is
 
-- [ ] Uygulama acilisinda `API_HOST` 127.0.0.1 disinda ise loglara belirgin bir
-      uyari basilmasi (yanlislikla acik birakilmis dagitimlari yakalamak icin).
+- [x] Uygulama acilisinda `API_HOST` 127.0.0.1 disinda ise loglara belirgin bir
+      uyari basilmasi — `api_server.py` lifespan icinde mevcut.

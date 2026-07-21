@@ -98,7 +98,10 @@ kilardi. Bulgu oldugu gibi birakildi.
 
 ## Olcum notu
 
-Bu kosudaki **sure** degerleri guvenilir degildir: degerlendirme calisirken ayni
-makinede test paketi de calistirildi ve kaynak rekabeti yasandi (en yavas yanit
-72 s gorunuyor). Gecti/kaldi sonuclari bundan etkilenmez. Gecikme olcumu icin
-makine bos birakilarak `python benchmark.py` calistirilmalidir.
+Guncel `RESULTS.md` **bos makinede** olculmustur ve `benchmark.py` ile
+tutarlidir: medyan yanit 15.5 sn, bunun ~15.4 sn'si ilk token oncesi (CPU
+embedding + baglam prefill), uretimin kendisi ~1 sn. 72 sn'lik uc deger olcum
+hatasi degildir: modelin tekrar dongusune girip 1024 token'lik butceyi
+tuketmesidir (dongu kesici ciktiyi temizler ama sureyi kurtaramaz,
+bkz. ADR-0007). Kategori sonuclari iki bagimsiz kosuda ayni cikmistir;
+olcum tekrarlanabilirdir.

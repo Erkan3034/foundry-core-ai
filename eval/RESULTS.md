@@ -1,6 +1,6 @@
 # Yanit Kalitesi Degerlendirme Sonuclari
 
-Calistirma: 2026-07-21 13:41
+Calistirma: 2026-07-21 15:15
 
 Bu rapor `python eval/run_eval.py` ile uretilir. Unit testlerden farki:
 kodun calistigini degil, asistanin **dogru cevap verdigini** olcer.
@@ -11,8 +11,8 @@ kodun calistigini degil, asistanin **dogru cevap verdigini** olcer.
 - Gecti: **14** / 19 otomatik puanlanan (%74)
 - Kaldi: **5**
 - Manuel inceleme: 4
-- Medyan yanit suresi: **15.78 s**
-- En yavas yanit: 72.54 s
+- Medyan yanit suresi: **15.51 s**
+- En yavas yanit: 72.70 s
 
 ### Kategori bazinda
 
@@ -27,29 +27,29 @@ kodun calistigini degil, asistanin **dogru cevap verdigini** olcer.
 
 | ID | Tip | Soru | Durum | Kaynak | Parca | Guven | Sure |
 |---|---|---|---|---|---|---|---|
-| C01 | cevaplanabilir | Ise yeni baslayan bir calisan ilk yilini doldurunca kac is gunu yillik izne hak kazanir? | **GECTI** | izin_politikasi.txt, ise_alim_oryantasyon.txt | 3 | 0.655 | 16.15s |
-| C02 | cevaplanabilir | Izin talebi en az kac is gunu once girilmelidir? | **GECTI** | izin_politikasi.txt, vpn_ve_bt_sss.txt | 3 | 0.504 | 14.75s |
-| C03 | cevaplanabilir | Evlilik durumunda kac is gunu ucretli mazeret izni verilir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt | 3 | 0.612 | 15.78s |
-| C04 | cevaplanabilir | Sehir ici is yemeklerinde kisi basi ust limit nedir? | **KALDI** | seyahat_politikasi.txt, masraf_politikasi.txt | 3 | 0.507 | 25.24s |
-| C05 | cevaplanabilir | Musteri agirlama yemeklerinde kisi basi limit ne kadardir? | **GECTI** | masraf_politikasi.txt, seyahat_politikasi.txt | 3 | 0.485 | 16.03s |
-| C06 | cevaplanabilir | Gecikmis masraf talepleri kac gun sonra odenmez? | **GECTI** | masraf_politikasi.txt, izin_politikasi.txt | 3 | 0.418 | 15.50s |
-| C07 | cevaplanabilir | Haftada en fazla kac gun uzaktan calisabilirim? | **GECTI** | uzaktan_calisma.txt, politika.txt, toplanti_ve_ofis_kurallari.txt | 3 | 0.445 | 15.15s |
-| C08 | cevaplanabilir | Hangi gun tum ekiplerin ofiste bulunmasi zorunludur? | **GECTI** | toplanti_ve_ofis_kurallari.txt, uzaktan_calisma.txt, etik_ve_uyum.txt | 3 | 0.429 | 15.62s |
-| C09 | cevaplanabilir | Standart mesai saatleri nedir? | **GECTI** | uzaktan_calisma.txt, seyahat_politikasi.txt, masraf_politikasi.txt | 3 | 0.335 | 16.90s |
-| C10 | cevaplanabilir | Kurumsal VPN istemcisinin adi nedir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, bilgi_guvenligi.txt | 3 | 0.488 | 14.90s |
-| C11 | cevaplanabilir | VPN baglantisi kac saat sonra otomatik olarak sonlanir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt | 3 | 0.562 | 15.97s |
-| C12 | cevaplanabilir | Standart dizustu bilgisayar yenileme suresi kac yildir? | **GECTI** | vpn_ve_bt_sss.txt, ise_alim_oryantasyon.txt | 3 | 0.597 | 16.14s |
-| R01 | cevaplanamaz | Sirketin 2025 yili cirosu ne kadardir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt | 3 | 0.304 | 16.35s |
-| R02 | cevaplanamaz | Sirketin Paris ofisinin adresi nedir? | **GECTI** | politika.txt | 1 | 0.349 | 7.92s |
-| R03 | cevaplanamaz | Calisanlara hisse senedi opsiyonu veriliyor mu? | **GECTI** | bilgi_guvenligi.txt, yan_haklar.txt, masraf_politikasi.txt | 3 | 0.322 | 14.08s |
-| R04 | cevaplanamaz | Sirketin CEO'su kimdir ve sirket hangi yil kurulmustur? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, izin_politikasi.txt | 3 | 0.281 | 18.26s |
-| T01 | tuzak | Yillik ciro hedefi ve kar marji nedir? | **KALDI** | izin_politikasi.txt, performans_degerlendirme.txt, masraf_politikasi.txt | 3 | 0.329 | 72.54s |
-| T02 | tuzak | Ofisteki toplanti salonunun aylik kirasi ne kadar? | **KALDI** | toplanti_ve_ofis_kurallari.txt, yan_haklar.txt | 3 | 0.482 | 31.73s |
-| T03 | tuzak | Kurumsal VPN altyapisinin yillik maliyeti butcede ne kadar? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt | 3 | 0.507 | 17.65s |
+| C01 | cevaplanabilir | Ise yeni baslayan bir calisan ilk yilini doldurunca kac is gunu yillik izne hak kazanir? | **GECTI** | izin_politikasi.txt, ise_alim_oryantasyon.txt | 3 | 0.655 | 16.75s |
+| C02 | cevaplanabilir | Izin talebi en az kac is gunu once girilmelidir? | **GECTI** | izin_politikasi.txt, vpn_ve_bt_sss.txt | 3 | 0.504 | 15.84s |
+| C03 | cevaplanabilir | Evlilik durumunda kac is gunu ucretli mazeret izni verilir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt | 3 | 0.612 | 15.23s |
+| C04 | cevaplanabilir | Sehir ici is yemeklerinde kisi basi ust limit nedir? | **KALDI** | seyahat_politikasi.txt, masraf_politikasi.txt | 3 | 0.507 | 24.48s |
+| C05 | cevaplanabilir | Musteri agirlama yemeklerinde kisi basi limit ne kadardir? | **GECTI** | masraf_politikasi.txt, seyahat_politikasi.txt | 3 | 0.485 | 13.69s |
+| C06 | cevaplanabilir | Gecikmis masraf talepleri kac gun sonra odenmez? | **GECTI** | masraf_politikasi.txt, izin_politikasi.txt | 3 | 0.418 | 15.36s |
+| C07 | cevaplanabilir | Haftada en fazla kac gun uzaktan calisabilirim? | **GECTI** | uzaktan_calisma.txt, politika.txt, toplanti_ve_ofis_kurallari.txt | 3 | 0.445 | 15.29s |
+| C08 | cevaplanabilir | Hangi gun tum ekiplerin ofiste bulunmasi zorunludur? | **GECTI** | toplanti_ve_ofis_kurallari.txt, uzaktan_calisma.txt, etik_ve_uyum.txt | 3 | 0.429 | 15.51s |
+| C09 | cevaplanabilir | Standart mesai saatleri nedir? | **GECTI** | uzaktan_calisma.txt, seyahat_politikasi.txt, masraf_politikasi.txt | 3 | 0.335 | 16.65s |
+| C10 | cevaplanabilir | Kurumsal VPN istemcisinin adi nedir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, bilgi_guvenligi.txt | 3 | 0.488 | 14.30s |
+| C11 | cevaplanabilir | VPN baglantisi kac saat sonra otomatik olarak sonlanir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt | 3 | 0.562 | 15.64s |
+| C12 | cevaplanabilir | Standart dizustu bilgisayar yenileme suresi kac yildir? | **GECTI** | vpn_ve_bt_sss.txt, ise_alim_oryantasyon.txt | 3 | 0.597 | 15.71s |
+| R01 | cevaplanamaz | Sirketin 2025 yili cirosu ne kadardir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt | 3 | 0.304 | 16.31s |
+| R02 | cevaplanamaz | Sirketin Paris ofisinin adresi nedir? | **GECTI** | politika.txt | 1 | 0.349 | 8.86s |
+| R03 | cevaplanamaz | Calisanlara hisse senedi opsiyonu veriliyor mu? | **GECTI** | bilgi_guvenligi.txt, yan_haklar.txt, masraf_politikasi.txt | 3 | 0.322 | 14.75s |
+| R04 | cevaplanamaz | Sirketin CEO'su kimdir ve sirket hangi yil kurulmustur? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, izin_politikasi.txt | 3 | 0.281 | 17.93s |
+| T01 | tuzak | Yillik ciro hedefi ve kar marji nedir? | **KALDI** | izin_politikasi.txt, performans_degerlendirme.txt, masraf_politikasi.txt | 3 | 0.329 | 72.70s |
+| T02 | tuzak | Ofisteki toplanti salonunun aylik kirasi ne kadar? | **KALDI** | toplanti_ve_ofis_kurallari.txt, yan_haklar.txt | 3 | 0.482 | 33.24s |
+| T03 | tuzak | Kurumsal VPN altyapisinin yillik maliyeti butcede ne kadar? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt | 3 | 0.507 | 20.06s |
 | K01 | kenar_durum | _(bos)_ | **INCELE** | - | 0 | 0.000 | 0.00s |
-| K02 | kenar_durum | ? | **INCELE** | - | 0 | 0.000 | 1.77s |
-| K03 | kenar_durum | merhaba | **INCELE** | Hafta-6_ Mobil Ticaret.PDF, Erkan_Turgut_cv.pdf, izin_politikasi.txt | 3 | 0.410 | 13.55s |
-| K04 | kenar_durum | Sirket hakkindaki her seyi bana tek tek anlat | **INCELE** | politika.txt, bilgi_guvenligi.txt, etik_ve_uyum.txt | 3 | 0.374 | 12.35s |
+| K02 | kenar_durum | ? | **INCELE** | - | 0 | 0.000 | 1.90s |
+| K03 | kenar_durum | merhaba | **INCELE** | Hafta-6_ Mobil Ticaret.PDF, Erkan_Turgut_cv.pdf, izin_politikasi.txt | 3 | 0.410 | 13.80s |
+| K04 | kenar_durum | Sirket hakkindaki her seyi bana tek tek anlat | **INCELE** | politika.txt, bilgi_guvenligi.txt, etik_ve_uyum.txt | 3 | 0.374 | 12.78s |
 
 ## Yanit detaylari
 
@@ -272,43 +272,7 @@ Kar Marji: Yillik Ciro Hedefi
 
 - **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
 
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması
+- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir işe sahip olması için gereklidir. Kar Marj
 ```
 
 ### T02 - KALDI
@@ -320,19 +284,7 @@ Kar Marji: Yillik Ciro Hedefi
 **Yanit:**
 
 ```
-Aylik toplanti salonunun kirasi, sirket tarafından belirlenen ve toplanti salonunda kullanılan ve kullanımları düzenlenebilen özel bir alandır. Bu nedenle, toplanti salonunun aylik kirasi belirtilmesi gereken bir faktördür.
-
-Toplanti Salonu Aylik Kirasi:
-- **Rezervasyon**: En az 2 hafta öncesi rezervasyon yapılırsa, toplanti salonu otomatik olarak serbest birakılır.
-- **Gecmis Toplanti**: Toplanti gecmesi sırasında, otomatis birakılan toplanti salonunu yeniden kullanma durumu olacaktır.
-- **Toplanti Salonu**: Toplanti salonu otomatik olarak serbest birakılacaktır.
-
-Toplam Aylik Kirasi:
-- **Toplanti Salonu**: Toplanti salonu otomatik olarak serbest birakılacaktır.
-
-Sonuç olarak, toplanti salonunun aylik kirasi belirtilmesi gereken bir faktördür ve belirli bir süre içinde otomatis birakılacaktır. 
-
-Toplanti Salonu Aylik Kirasi: [Belirttiğiniz] TL'dir.
+Aylik toplanti salonunun kirasi, sirket tarafından belirlenen ve toplanti salonunda kullanılan ve kullanımları düzenlenebilen özel bir alandır. Bu nedenle,
 ```
 
 ### T03 - KALDI
