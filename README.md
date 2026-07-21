@@ -59,6 +59,7 @@ Kullanici sorusu
 
 Neden bu sekilde kuruldugu: **[Mimari Karar Kayitlari (ADR)](docs/adr/)**
 Terimler: **[Sozluk](docs/glossary.md)**
+Projenin teknik bulgulari: **[Nerede zorlandik, ne ogrendik](docs/ogrenilenler.md)**
 
 ## Kurulum
 

@@ -71,6 +71,12 @@ Program planinin sundugu dort baslik: **problem**, **bilesenler**,
 - [ ] Tarayici zoom seviyesi okunakli, gereksiz sekmeler kapali
 - [ ] `eval/RESULTS.md` ayri bir sekmede acik
 
+> **Not:** Videodaki "ne ogrendim" bolumunun uzun hali
+> [ogrenilenler.md](ogrenilenler.md) icinde. Sunumda sorulursa oradaki
+> bulgulara referans verebilirsin; ozellikle "benzerlik skoru
+> cevaplanabilirligin gostergesi degil" ve "darbogaz uretim degil prefill"
+> baslıklari, yuzeysel bir RAG anlatimindan ayrisan kisimlar.
+
 ## Sorulursa hazir cevaplar
 
 **"Plan CLI yeterli diyordu, neden bu kadar buyuttun?"**
