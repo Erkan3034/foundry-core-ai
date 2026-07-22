@@ -314,6 +314,46 @@ yakalayamazsınız. Kritik alanlarda (hukuk, sağlık, finans) küçük modelle
 
 ---
 
+## Prompt üzerinde yapılan üç deney
+
+Aynı 23 soruyla, tek değişken değiştirilerek ölçüldü.
+
+| Varyant | Cevaplanabilir | Cevaplanamaz | Tuzak | Genel |
+|---|---|---|---|---|
+| Türkçe, kaynak gösterme kuralı **var** | 11/12 | 3/4 | 0/3 | %74 |
+| Türkçe, **iki kural eklendi** | 9/12 | 2/4 | 0/3 | **%58** |
+| Türkçe, kaynak kuralı **kaldırıldı** | **12/12** | 3/4 | 0/3 | **%79** |
+| **İngilizce** prompt | 9/12 | 2/4 | **1/3** | %63 |
+
+**Modelin uymadığı bir kural bedava değil.** `[Kaynak: dosya_adı]` kuralına
+model zaten uymuyordu (kaynaklar arayüzde API'nin döndürdüğü listeden
+gösteriliyor). Kuralı silmek cevaplanabilir soruları 11/12'den **12/12**'ye
+çıkardı — üç koşudur takılan "aynı cümledeki iki sayıdan yanlışını seçme"
+hatası dahil. Prompt'ta yer kaplayan işlevsiz bir talimat, uyulan kuralların
+dikkat bütçesini tüketiyor.
+
+**Kural eklemek, eklenen kuralı kazandırmıyor.** Gözlenen bir hatayı hedefleyen
+iki kural ekledik ("sayıyı başka konuya taşıma", "özet paragrafı yazma").
+Mantıklı görünüyordu; sonuç %74'ten %58'e düştü. Dört rakip kural, en üstteki
+reddetme talimatını da zayıflattı. Küçük modelde prompt bir kurallar listesi
+değil, **sınırlı bir dikkat bütçesidir**.
+
+**İngilizce prompt: kural uyumu arttı, olgu seçimi bozuldu.** Qwen2.5'in
+talimat ayarı ağırlıklı İngilizce olduğu için promptu çevirmeyi denedik.
+Beklenen taraf gerçekleşti — reddetme güçlendi ve **tuzak kategorisinde ilk
+kez bir soru geçti** (0/3 → 1/3). Ama cevaplanabilir sorular 12/12'den 9/12'ye
+düştü: model doğru belgeyi ve doğru parçayı getiriyor, sonra parçanın içinden
+yanlış cümleyi seçiyor. Örnek: "ilk yıl kaç gün izin" sorusuna 5 ve 10 yıllık
+kıdem oranlarını anlatıyor.
+
+Yorum: talimat İngilizce, bağlam Türkçe olduğunda model iki dil arasında köprü
+kuruyor; talimat ayrıştırması güçlenirken **bağlam–cevap eşleştirmesi**
+zayıflıyor. Net etki olumsuz olduğu için geri alındı. Bağlamın da İngilizce
+olduğu bir kurulumda sonuç muhtemelen tersine dönerdi — yani bulgu "İngilizce
+prompt kötüdür" değil, **talimat dili ile bağlam dili ayrıştığında bedel var**.
+
+---
+
 ## Teknik değişiklikler ve gerekçeleri
 
 Proje boyunca değiştirdiğimiz teknik kararlar ve **neden** değiştirdiğimiz:
