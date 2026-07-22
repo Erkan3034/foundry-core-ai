@@ -12,11 +12,22 @@ class TestSystemPrompt:
         from rag_engine import RAGEngine
         assert "{context}" in RAGEngine.SYSTEM_PROMPT
 
-    def test_prompt_has_rules_and_citations(self):
+    def test_prompt_references_context(self):
         from rag_engine import RAGEngine
         prompt = RAGEngine.SYSTEM_PROMPT
         assert "BAĞLAM" in prompt or "BAGLAM" in prompt
-        assert "Kaynak" in prompt or "kaynak" in prompt
+
+    def test_prompt_does_not_ask_for_inline_citations(self):
+        """Satir ici [Kaynak: ...] kurali BILEREK kaldirildi.
+
+        Model kurala zaten uymuyordu; kaynaklar arayuzde API'nin dondurdugu
+        listeden gosteriliyor. Kurali silmek olculebilir bir kazanc sagladi:
+        cevaplanabilir sorular 11/12 -> 12/12, genel %74 -> %79.
+        Modelin uymadigi bir kural bedava degil; uydugu kurallarin talimat
+        butcesini tuketiyor. Bkz. docs/ogrenilenler.md
+        """
+        from rag_engine import RAGEngine
+        assert "[Kaynak:" not in RAGEngine.SYSTEM_PROMPT
 
     def test_config_max_tokens_default(self):
         from config import CONFIG
