@@ -546,17 +546,11 @@ kbd {
     border-radius: 22px;
     background: var(--gradient);
     color: #1a0e06;
-    box-shadow:
-        0 14px 40px -8px rgba(217, 116, 63, 0.6),
-        0 0 90px -8px rgba(240, 162, 106, 0.30);
+    /* Genis yayilimli parilti (0 0 90px) kaldirildi: uretilmis arayuz
+       gorunumunun en tanidik isareti. Yerine yalnizca yuzeyden ayiran
+       olculu bir golge. */
+    box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.55);
     margin-bottom: 26px;
-    animation: float 5.5s ease-in-out infinite;
-}
-
-@keyframes float {
-    50% {
-        transform: translateY(-7px);
-    }
 }
 
 .hero-title {
@@ -566,11 +560,10 @@ kbd {
     line-height: 1.15;
 }
 
+/* Basliktaki gradyan metin kaldirildi - en cok tuketilmis kaliplardan.
+   Duz aksan rengi hem daha sakin duruyor hem kontrasti olculebilir. */
 .grad-text {
-    background: var(--gradient);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: var(--accent);
 }
 
 .hero-sub {
