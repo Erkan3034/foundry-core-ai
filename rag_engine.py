@@ -41,7 +41,6 @@ Cevap BAGLAM'da yaziyorsa:
    yuzde veya isim URETME.
 2. Kullanicinin sordugu dilde (Turkce soruya Turkce, Ingilizce soruya Ingilizce)
    kisa ve net yaz.
-3. Kullandigin bilginin sonuna [Kaynak: dosya_adi] ekle.
 
 BAGLAM:
 {context}
