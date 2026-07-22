@@ -31,6 +31,10 @@ ENV/
 *.swp
 *.swo
 
+# Kisisel notlar / yardimci betikler - depoya girmez
+yeni-cihaz-kurulum.ps1
+.env.yedek
+
 # Database
 # -shm ve -wal: SQLite WAL dosyalari. Ana dosyaya henuz yazilmamis GERCEK
 # VERI icerirler (parola hash'leri dahil); *.db kurali bunlari yakalamaz.
