@@ -1,0 +1,257 @@
+<meta charset="utf-8">
+<title>Foundry Core AI — Mimari</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #0d1117; overflow: hidden;
+               font-family: "Segoe UI", system-ui, sans-serif; }
+
+  /* 16:9 sabit tuval — ekrana olceklenir */
+  .slide {
+    width: 1600px; height: 900px;
+    position: absolute; top: 50%; left: 50%;
+    transform-origin: center center;
+    background: linear-gradient(150deg, #11161f 0%, #0d1117 55%, #131a24 100%);
+    color: #e6edf3; padding: 30px 44px 26px;
+    display: flex; flex-direction: column;
+  }
+
+  /* ---------- baslik ---------- */
+  header { display: flex; align-items: flex-end; justify-content: space-between;
+           border-bottom: 1px solid #26303d; padding-bottom: 13px; }
+  h1 { font-size: 36px; font-weight: 650; letter-spacing: -.5px; }
+  h1 span { color: #38bdb6; }
+  .tags { display: flex; gap: 7px; margin-top: 9px; }
+  .tag { font-size: 12.5px; color: #8ea0b4; border: 1px solid #2b3644;
+         border-radius: 20px; padding: 3px 11px; background: #141b24; }
+  .who { text-align: right; font-size: 13.5px; color: #7d8ea3; line-height: 1.55; }
+  .who b { color: #c9d6e4; font-weight: 600; font-size: 15px; display: block; }
+
+  /* ---------- mimari ---------- */
+  .diagram { margin-top: 20px; background: #0a0e14; border: 1px solid #1f2833;
+             border-radius: 12px; padding: 24px 24px 26px; }
+  .lane + .lane { margin-top: 24px; padding-top: 24px; border-top: 1px dashed #212b38; }
+  .lane-t { font-size: 12px; letter-spacing: 2px; text-transform: uppercase;
+            color: #627285; font-weight: 700; margin-bottom: 13px; }
+  .lane-t b { color: #8fa2b8; font-weight: 700; }
+
+  .row { display: flex; align-items: center; gap: 10px; }
+  .node { background: #161d27; border: 1px solid #2f3a49; border-radius: 8px;
+          padding: 11px 14px; font-size: 16px; font-weight: 600; line-height: 1.25;
+          white-space: nowrap; }
+  .node i { font-style: normal; display: block; font-size: 12.5px; font-weight: 400;
+            color: #7d8ea3; margin-top: 4px; }
+  .arw { color: #46566a; font-size: 19px; line-height: 1; }
+
+  /* cihaz rozetleri */
+  .chip { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .8px;
+          border-radius: 4px; padding: 1px 6px; margin-left: 8px; vertical-align: 2px; }
+  .chip.cpu { background: #223040; color: #9db6cf; }
+  .chip.gpu { background: #10403c; color: #4fd6cb; }
+
+  .node.cpu { border-color: #3d4c5e; }
+  .node.gpu { border-color: #38bdb6; background: #0f201f; }
+  .node.store { border-color: #4a5a7a; background: #131725; }
+  .node.out  { border-color: #55703f; background: #131b12; }
+  .node.skip { border-color: #7a5c33; background: #1d1710; }
+
+  /* hibrit arama kutusu */
+  .hybrid { border: 1px solid #38566b; background: #0f1a22; border-radius: 9px;
+            padding: 10px 12px; display: flex; align-items: center; gap: 11px; }
+  .hyb-t { font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase;
+           color: #5d7f96; font-weight: 700; writing-mode: vertical-rl; transform: rotate(180deg); }
+  .two { display: flex; flex-direction: column; gap: 7px; }
+  .mini { background: #17222c; border: 1px solid #2e3f4e; border-radius: 6px;
+          padding: 6px 11px; font-size: 13.5px; white-space: nowrap; }
+  .mini b { color: #cfe0ee; font-weight: 600; }
+  .mini span { color: #7d8ea3; font-size: 12px; }
+  .merge { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #46566a; font-size: 16px; }
+  .rrf { background: #16262b; border: 1px solid #35606a; color: #6fd0c6;
+         border-radius: 6px; padding: 8px 11px; font-size: 14.5px; font-weight: 700; white-space: nowrap; }
+  .rrf i { font-style: normal; display: block; font-size: 11.5px; font-weight: 400; color: #7fa3a0; margin-top: 3px; }
+
+  /* esik + dallanma */
+  .gate { border: 1px solid #b48545; background: #1e1810; border-radius: 8px;
+          padding: 11px 13px; font-size: 15px; font-weight: 650; color: #f0c987;
+          text-align: center; white-space: nowrap; }
+  .gate i { font-style: normal; display: block; font-size: 12px; font-weight: 400; color: #a8926e; margin-top: 3px; }
+  .fork { display: flex; flex-direction: column; gap: 10px; }
+  .path { display: flex; align-items: center; gap: 10px; }
+  .plabel { font-size: 12px; font-weight: 700; letter-spacing: .5px; white-space: nowrap; }
+  .plabel.yes { color: #6fd0c6; }
+  .plabel.no  { color: #d4a05c; }
+
+  /* ---------- alt panel ---------- */
+  .bottom { margin-top: 18px; display: grid; grid-template-columns: 452px 456px 1fr;
+            gap: 20px; flex: 1; }
+  .panel { background: #0f141c; border: 1px solid #1f2833; border-radius: 10px; padding: 14px 16px 15px; }
+  .p-t { font-size: 11.5px; letter-spacing: 1.8px; text-transform: uppercase;
+         color: #627285; font-weight: 700; margin-bottom: 3px; }
+  .p-s { font-size: 12.5px; color: #4f5f72; margin-bottom: 12px; }
+
+  /* bar grafik */
+  .bar { display: grid; grid-template-columns: 82px 1fr 62px; align-items: center;
+         gap: 10px; margin-bottom: 13px; }
+  .bar .lb { font-size: 13px; color: #8ea0b4; text-align: right; }
+  .bar .tr { display: block; background: #151c25; border-radius: 4px; height: 26px; overflow: hidden; }
+  .bar .fl { display: block; height: 100%; border-radius: 4px;
+             background: linear-gradient(90deg, #2a6f8f, #38bdb6); }
+  .bar .fl.hot { background: linear-gradient(90deg, #a86a35, #e0a458); }
+  .bar .vl { font-size: 14.5px; font-weight: 650; color: #cfdae6; }
+
+  /* yigin bar */
+  .stack { display: flex; height: 52px; border-radius: 6px; overflow: hidden; margin-bottom: 14px; }
+  .seg { display: flex; align-items: center; justify-content: center;
+         font-size: 13.5px; font-weight: 650; color: #0b0f14; }
+  .seg.s1 { background: #4b7f96; }
+  .seg.s2 { background: #e0a458; color: #1a1206; }
+  .seg.s3 { background: #6fd0c6; }
+  .lgd { display: flex; flex-direction: column; gap: 9px; }
+  .lg { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: #8ea0b4; }
+  .dot { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+  .lg b { color: #dbe6f0; font-weight: 650; }
+
+  /* olcum kutucuklari */
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+  .t { background: #131a23; border: 1px solid #222c39; border-radius: 8px;
+       padding: 14px 6px; text-align: center; }
+  .t u { display: block; text-decoration: none; font-size: 24px; font-weight: 700; color: #e6edf3; }
+  .t u small { font-size: 13px; font-weight: 600; color: #93a4b8; }
+  .t s { display: block; text-decoration: none; font-size: 11px; color: #6e8096; margin-top: 4px; line-height: 1.3; }
+  .t.a u { color: #38bdb6; }
+  .t.b u { color: #e0a458; }
+
+  .note { margin-top: 10px; font-size: 11.5px; color: #4f5f72; line-height: 1.45; }
+</style>
+
+<div class="slide" id="slide">
+
+  <header>
+    <div>
+      <h1>Foundry Core AI — <span>%100 cihaz içi</span> RAG asistanı</h1>
+      <div class="tags">
+        <span class="tag">Microsoft Foundry Local</span>
+        <span class="tag">Türkçe</span>
+        <span class="tag">SQLite · tek dosya</span>
+        <span class="tag">harici vektör DB yok</span>
+        <span class="tag">0 dış ağ çağrısı</span>
+      </div>
+    </div>
+    <div class="who">
+      <b>Erkan TURGUT</b>
+      Microsoft Summer School<br>
+      github.com/Erkan3034/foundry-core-ai
+    </div>
+  </header>
+
+  <!-- ======== MİMARİ ======== -->
+  <div class="diagram">
+
+    <div class="lane">
+      <div class="lane-t"><b>1 · İNDEKSLEME</b> — bir kez</div>
+      <div class="row">
+        <div class="node">Belgeler<i>.txt · .pdf · .docx</i></div>
+        <div class="arw">→</div>
+        <div class="node">Parçalama<i>chunk + örtüşme</i></div>
+        <div class="arw">→</div>
+        <div class="node cpu">Embedding<span class="chip cpu">CPU</span><i>1024 boyut</i></div>
+        <div class="arw">→</div>
+        <div class="node store">SQLite<i>float32 BLOB · 4 KB/vektör</i></div>
+        <div class="arw">→</div>
+        <div class="node store">RAM önbelleği<i>tek matris · N×1024</i></div>
+      </div>
+    </div>
+
+    <div class="lane">
+      <div class="lane-t"><b>2 · SORGU</b> — her soruda</div>
+      <div class="row">
+        <div class="node">Soru</div>
+        <div class="arw">→</div>
+        <div class="node cpu">Sorgu embedding<span class="chip cpu">CPU</span></div>
+        <div class="arw">→</div>
+
+        <div class="hybrid">
+          <div class="hyb-t">Hibrit arama</div>
+          <div class="two">
+            <div class="mini"><b>Dense</b> <span>· kosinüs · matris çarpımı</span></div>
+            <div class="mini"><b>BM25</b> <span>· FTS5 · ön-ek + TR normalizasyon</span></div>
+          </div>
+          <div class="merge">→</div>
+          <div class="rrf">RRF<i>sıralama birleştirme</i></div>
+        </div>
+
+        <div class="arw">→</div>
+        <div class="gate">Benzerlik eşiği<i>0.35</i></div>
+        <div class="arw">→</div>
+
+        <div class="fork">
+          <div class="path">
+            <span class="plabel yes">GEÇTİ ↗</span>
+            <div class="node gpu">LLM<span class="chip gpu">GPU</span><i>qwen2.5-1.5b-instruct</i></div>
+            <div class="arw">→</div>
+            <div class="node out">Yanıt + kaynak<i>~15 sn</i></div>
+          </div>
+          <div class="path">
+            <span class="plabel no">GEÇMEDİ ↘</span>
+            <div class="node skip">"Belgelerde bilgi yok"<i>LLM hiç çağrılmaz · 6.7 sn</i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ======== ÖLÇÜMLER ======== -->
+  <div class="bottom">
+
+    <div class="panel">
+      <div class="p-t">İlk token süresi</div>
+      <div class="p-s">bağlam uzunluğuna göre · saniye</div>
+      <div class="bar"><span class="lb">0 karakter</span><span class="tr"><span class="fl" style="width:24%"></span></span><span class="vl">4.1</span></div>
+      <div class="bar"><span class="lb">500</span><span class="tr"><span class="fl" style="width:41%"></span></span><span class="vl">6.9</span></div>
+      <div class="bar"><span class="lb">1000</span><span class="tr"><span class="fl" style="width:46%"></span></span><span class="vl">7.7</span></div>
+      <div class="bar"><span class="lb">2144</span><span class="tr"><span class="fl hot" style="width:100%"></span></span><span class="vl">16.8</span></div>
+      <div class="note">Bağlam uzunluğu = birinci dereceden gecikme parametresi</div>
+    </div>
+
+    <div class="panel">
+      <div class="p-t">Yanıt süresi nereye gidiyor</div>
+      <div class="p-s">toplam ~16.7 sn</div>
+      <div class="stack">
+        <div class="seg s1" style="width:10%">1.6</div>
+        <div class="seg s2" style="width:82%">13.8 sn</div>
+        <div class="seg s3" style="width:8%">1.3</div>
+      </div>
+      <div class="lgd">
+        <div class="lg"><span class="dot" style="background:#4b7f96"></span>Embedding + hibrit arama — <b>1.6 sn</b></div>
+        <div class="lg"><span class="dot" style="background:#e0a458"></span>Prefill (prompt işleme) — <b>13.8 sn · darboğaz</b></div>
+        <div class="lg"><span class="dot" style="background:#6fd0c6"></span>Üretim / decode — <b>1.3 sn</b> (19 token/sn)</div>
+      </div>
+      <div class="note">Darboğaz decode değil prefill → streaming algılanan hıza katkı vermiyor</div>
+    </div>
+
+    <div class="panel">
+      <div class="p-t">Ölçümler</div>
+      <div class="p-s">MX450 · 2 GB VRAM · boş sistem · iki bağımsız koşu</div>
+      <div class="tiles">
+        <div class="t a"><u>0.047<small> ms</small></u><s>vektör arama<br>sorgu başına</s></div>
+        <div class="t a"><u>21.300</u><s>sorgu / sn</s></div>
+        <div class="t"><u>4<small> KB</small></u><s>vektör başına<br>(JSON'da 20 KB)</s></div>
+        <div class="t b"><u>%74</u><s>yanıt kalitesi<br>23 soruluk eval</s></div>
+        <div class="t"><u>166<small>/166</small></u><s>test · CI</s></div>
+        <div class="t"><u>8</u><s>mimari karar<br>kaydı (ADR)</s></div>
+      </div>
+      <div class="note">Açık zayıflıklar belgelenmiş: tuzak sorularda 0/3 · ilk token 15.4 sn</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function fit() {
+    const s = document.getElementById('slide');
+    const k = Math.min(window.innerWidth / 1600, window.innerHeight / 900);
+    s.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+  }
+  fit();
+  addEventListener('resize', fit);
+</script>
