@@ -16,22 +16,38 @@ logger = logging.getLogger(__name__)
 def select_device_variant(model, device: str) -> None:
     """Modelin istenen cihaz varyantini sec.
 
-    device "auto" ise varsayilan (Core'un sectigi) varyant kullanilir.
-    Aksi halde id'sinde device ifadesini iceren varyant secilir; yoksa
-    varsayilan varyantla devam edilir.
+    device "auto" ise veya belirtilmediyse, oncelikle GPU (cuda/directml/gpu) varyantini arayip secer;
+    GPU varyanti yoksa varsayilanda birakir.
+    device "cuda-gpu", "generic-cpu" gibi spesifik ise id'sinde bu ifade gecen varyanti secer.
     """
-    if not device or device == "auto":
+    if not hasattr(model, "variants") or not model.variants:
+        logger.warning(f"Model varyantlari bulunamadi ({getattr(model, 'alias', 'unknown')})")
         return
 
-    for variant in model.variants:
-        if device in variant.id:
-            model.select_variant(variant)
-            logger.info(f"Model varyanti secildi: {variant.id}")
-            return
+    if device and device != "auto":
+        for variant in model.variants:
+            if device in variant.id:
+                model.select_variant(variant)
+                logger.info(f"Spesifik model varyanti secildi ({model.alias}): {variant.id}")
+                return
+        logger.warning(
+            f"'{device}' varyanti bulunamadi ({model.alias}), "
+            f"otomatik GPU aramasina geciliyor..."
+        )
 
-    logger.warning(
-        f"'{device}' varyanti bulunamadi ({model.alias}), "
-        f"varsayilan kullaniliyor: {model.id}"
+    # "auto" veya spesifik varyant bulunamadiysa: GPU varyantlarini ara (cuda, directml, gpu)
+    gpu_keywords = ["cuda", "directml", "gpu"]
+    for keyword in gpu_keywords:
+        for variant in model.variants:
+            if keyword in variant.id.lower():
+                model.select_variant(variant)
+                logger.info(f"Otomatik GPU varyanti secildi ({model.alias}): {variant.id}")
+                return
+
+    model_id = getattr(model, "id", "unknown")
+    logger.info(
+        f"GPU varyanti bulunamadi/secilemedi ({model.alias}), "
+        f"varsayilan varyant kullaniliyor: {model_id}"
     )
 
 
@@ -60,7 +76,8 @@ class EmbeddingManager:
         if CONFIG.model_cache_dir:
             config.model_cache_dir = CONFIG.model_cache_dir
 
-        FoundryLocalManager.initialize(config)
+        if not getattr(FoundryLocalManager, "instance", None):
+            FoundryLocalManager.initialize(config)
         self._manager = FoundryLocalManager.instance
 
         # EP'leri indir ve kaydet (Windows icin)
@@ -101,15 +118,14 @@ class EmbeddingManager:
         return response.data[0].embedding
 
     def embed_batch(self, texts: List[str]) -> List[List[float]]:
-        """Birden fazla metni toplu embedding'e cevir.
-
-        API: client.generate_embeddings(texts) -> response.data[i].embedding
-        """
+        """Birden fazla metni toplu embedding'e cevir."""
         if not self._initialized:
             self.initialize()
 
-        response = self._client.generate_embeddings(texts)
-        return [item.embedding for item in response.data]
+        if not texts:
+            return []
+
+        return [self.embed_text(t) for t in texts]
 
     def shutdown(self):
         """Modeli bellekten kaldir."""

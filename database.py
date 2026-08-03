@@ -80,11 +80,17 @@ class Database:
                 )
             """)
 
-            # Migration: Var olan veritabanları için embedding_blob sütununu kontrol et ve ekle
-            try:
-                cursor.execute("ALTER TABLE chunks ADD COLUMN embedding_blob BLOB")
-            except sqlite3.OperationalError:
-                pass  # Sütun zaten var
+            # Migration: Var olan veritabanları için ek sütunları kontrol et ve ekle
+            for col_name, col_type in [
+                ("embedding_blob", "BLOB"),
+                ("page_number", "INTEGER"),
+                ("section_title", "TEXT"),
+                ("parent_chunk_text", "TEXT"),
+            ]:
+                try:
+                    cursor.execute(f"ALTER TABLE chunks ADD COLUMN {col_name} {col_type}")
+                except sqlite3.OperationalError:
+                    pass  # Sütun zaten var
 
             # Metadata tablosu
             cursor.execute("""
@@ -187,6 +193,9 @@ class Database:
                 c["chunk_text"],
                 pack_embedding(c.get("embedding")),
                 c.get("token_count"),
+                c.get("page_number"),
+                c.get("section_title"),
+                c.get("parent_chunk_text"),
             )
             for c in chunks
         ]
@@ -195,8 +204,8 @@ class Database:
             cursor = conn.cursor()
             cursor.executemany(
                 """INSERT INTO chunks
-                   (document_id, chunk_index, chunk_text, embedding, embedding_blob, token_count)
-                   VALUES (?, ?, ?, NULL, ?, ?)""",
+                   (document_id, chunk_index, chunk_text, embedding, embedding_blob, token_count, page_number, section_title, parent_chunk_text)
+                   VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?)""",
                 rows
             )
             # DIKKAT: executemany() sonrasi cursor.lastrowid None dondurur.
@@ -250,7 +259,8 @@ class Database:
             cursor = conn.cursor()
             cursor.execute("""
                 SELECT c.id, c.document_id, c.chunk_index, c.chunk_text, 
-                       c.embedding, c.embedding_blob, d.source, d.file_path
+                       c.embedding, c.embedding_blob, c.page_number, c.section_title, c.parent_chunk_text,
+                       d.source, d.file_path
                 FROM chunks c
                 JOIN documents d ON c.document_id = d.id
                 WHERE c.embedding_blob IS NOT NULL OR c.embedding IS NOT NULL
@@ -274,6 +284,9 @@ class Database:
                         "chunk_index": row["chunk_index"],
                         "chunk_text": row["chunk_text"],
                         "embedding": vec,
+                        "page_number": row["page_number"],
+                        "section_title": row["section_title"],
+                        "parent_chunk_text": row["parent_chunk_text"],
                         "source": row["source"],
                         "file_path": row["file_path"]
                     })
@@ -284,6 +297,24 @@ class Database:
 
             embeddings_matrix = np.vstack(vectors)
             return candidates, embeddings_matrix
+
+    def get_all_chunks(self) -> List[dict]:
+        """Veritabanındaki tüm parçaları çek."""
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, document_id, chunk_index, chunk_text FROM chunks")
+            return [dict(row) for row in cursor.fetchall()]
+
+    def save_chunk_embedding(self, chunk_id: int, embedding: List[float]) -> None:
+        """Belirtilen parçanın embedding BLOB verisini güncelle."""
+        blob = pack_embedding(embedding)
+        with self._get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE chunks SET embedding_blob = ?, embedding = NULL WHERE id = ?",
+                (blob, chunk_id)
+            )
+            conn.commit()
 
     def search_keyword(self, query: str, limit: int = 10) -> List[dict]:
         """BM25 anahtar kelime araması (hibrit aramanın seyrek/sparse ayağı).

@@ -172,9 +172,15 @@ class Retriever:
 
         for i, result in enumerate(results):
             source = result.get("source", "Bilinmeyen")
+            page_info = f" | Sayfa {result['page_number']}" if result.get("page_number") else ""
+            section_info = f" | Bölüm: {result['section_title']}" if result.get("section_title") else ""
+            
+            # Parent-Child Retrieval: Parent chunk varsa LLM bağlamına parent metni koy
+            text_for_context = result.get("parent_chunk_text") or result["chunk_text"]
+            
             part = (
-                f"[KAYNAK: {source} | PARCA {i+1}]\n"
-                f"{result['chunk_text']}"
+                f"[KAYNAK: {source}{page_info}{section_info} | PARÇA {i+1}]\n"
+                f"{text_for_context}"
             )
 
             if used_results and total_length + len(part) > CONFIG.max_context_length:

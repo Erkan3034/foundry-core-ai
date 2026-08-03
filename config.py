@@ -23,7 +23,7 @@ class Config:
     # Cihaz secimi: "auto" varsayilan varyanti kullanir; "generic-cpu",
     # "cuda-gpu" gibi bir deger, id'sinde bu ifadeyi iceren varyanti secer.
     # Dusuk VRAM'li sistemlerde embedding'i CPU'da tutmak chat modeline yer acar.
-    embedding_device: str = field(default_factory=lambda: os.getenv("EMBEDDING_DEVICE", "generic-cpu"))
+    embedding_device: str = field(default_factory=lambda: os.getenv("EMBEDDING_DEVICE", "auto"))
     chat_device: str = field(default_factory=lambda: os.getenv("CHAT_DEVICE", "auto"))
 
     # Veritabanı
@@ -69,10 +69,22 @@ class Config:
     keyword_rescue_ratio: float = field(
         default_factory=lambda: float(os.getenv("KEYWORD_RESCUE_RATIO", "0.75")))
 
+    # Reranker (Yeniden Sıralayıcı) Parametreleri
+    use_reranker: bool = field(
+        default_factory=lambda: os.getenv("USE_RERANKER", "true").lower() == "true")
+    reranker_model_name: str = field(
+        default_factory=lambda: os.getenv("RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2-m3"))
+    rerank_pool_size: int = field(
+        default_factory=lambda: int(os.getenv("RERANK_POOL_SIZE", "20")))
+
     # LLM ornekleme
     max_tokens: int = field(default_factory=lambda: int(os.getenv("MAX_TOKENS", "1024")))
     temperature: float = field(default_factory=lambda: float(os.getenv("TEMPERATURE", "0.35")))
-    frequency_penalty: float = field(default_factory=lambda: float(os.getenv("FREQUENCY_PENALTY", "0.0")))
+    frequency_penalty: float = field(default_factory=lambda: float(os.getenv("FREQUENCY_PENALTY", "0.3")))
+    presence_penalty: float = field(default_factory=lambda: float(os.getenv("PRESENCE_PENALTY", "0.3")))
+    repetition_penalty: float = field(default_factory=lambda: float(os.getenv("REPETITION_PENALTY", "1.12")))
+    top_p: float = field(default_factory=lambda: float(os.getenv("TOP_P", "0.9")))
+    top_k_sampling: int = field(default_factory=lambda: int(os.getenv("TOP_K_SAMPLING", "40")))
 
     # Model Cache
     model_cache_dir: str | None = field(default_factory=lambda: os.getenv("MODEL_CACHE_DIR"))

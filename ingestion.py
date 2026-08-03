@@ -75,14 +75,18 @@ class DocumentIngestor:
         import fitz
         text_parts = []
         with fitz.open(file_path) as doc:
-            for page in doc:
-                text_parts.append(page.get_text())
+            for page_num, page in enumerate(doc, 1):
+                p_text = page.get_text().strip()
+                if not p_text:
+                    logger.warning(f"  [UYARI] PDF sayfa {page_num} metinsiz (görsel/OCR gerekebilir): {file_path.name}")
+                    continue
+                text_parts.append(f"--- SAYFA {page_num} ---\n{p_text}")
         return "\n\n".join(text_parts)
 
     def _read_docx(self, file_path: Path) -> str:
         from docx import Document
         doc = Document(file_path)
-        return "\n\n".join(p.text for p in doc.paragraphs)
+        return "\n\n".join(p.text for p in doc.paragraphs if p.text.strip())
 
     def _read_xlsx(self, file_path: Path) -> str:
         import openpyxl
@@ -91,8 +95,20 @@ class DocumentIngestor:
         for sheet in wb.worksheets:
             rows = []
             for row in sheet.iter_rows(values_only=True):
-                rows.append("\t".join(str(c) for c in row if c is not None))
-            text_parts.append(f"[Sayfa: {sheet.title}]\n" + "\n".join(rows))
+                cleaned = [str(c).strip() if c is not None else "" for c in row]
+                if any(cleaned):
+                    rows.append(cleaned)
+            if not rows:
+                continue
+
+            # Markdown Tablo Formatına Dönüştür
+            table_lines = [f"### [Excel Sayfası: {sheet.title}]"]
+            headers = rows[0]
+            table_lines.append("| " + " | ".join(headers) + " |")
+            table_lines.append("| " + " | ".join(["---"] * len(headers)) + " |")
+            for r in rows[1:]:
+                table_lines.append("| " + " | ".join(r) + " |")
+            text_parts.append("\n".join(table_lines))
         wb.close()
         return "\n\n".join(text_parts)
 
@@ -100,19 +116,87 @@ class DocumentIngestor:
         from pptx import Presentation
         prs = Presentation(file_path)
         text_parts = []
-        for slide in prs.slides:
+        for slide_num, slide in enumerate(prs.slides, 1):
             slide_texts = []
             for shape in slide.shapes:
-                if shape.has_text_frame:
-                    slide_texts.append(shape.text)
-            text_parts.append("\n".join(slide_texts))
+                if shape.has_text_frame and shape.text.strip():
+                    slide_texts.append(shape.text.strip())
+            if slide_texts:
+                text_parts.append(f"--- SAYFA {slide_num} ---\n" + "\n".join(slide_texts))
         return "\n\n".join(text_parts)
 
-    def _chunk_text(self, text: str) -> List[str]:
-        """Metni parcalara bol.
+    def _chunk_document(self, text: str) -> List[dict]:
+        """Yapı-farkında (Structure-Aware) ve Parent-Child parçalama.
 
-        Strateji: Paragraf bazli bolme + boyut limiti.
+        Döndürür: [{'chunk_text': str, 'parent_chunk_text': str, 'section_title': str, 'page_number': int}]
         """
+        import re
+        if not text.strip():
+            return []
+
+        # Sayfa ve başlık bazlı bölümler
+        lines = text.split("\n")
+        sections = []
+        current_section_lines = []
+        current_title = "Genel"
+        current_page = None
+
+        for line in lines:
+            # Sayfa kontrolü
+            page_match = re.search(r'---\s*SAYFA\s*(\d+)\s*---', line, re.IGNORECASE)
+            if page_match:
+                current_page = int(page_match.group(1))
+
+            # Başlık kontrolü (#, ##, Bölüm, Madde, vb.)
+            header_match = re.match(r'^(#{1,6}\s+|Bölüm\s+\d+|Madde\s+\d+|###?\s+\[Excel Sayfası:)', line.strip(), re.IGNORECASE)
+            if header_match and current_section_lines:
+                sec_text = "\n".join(current_section_lines).strip()
+                if sec_text:
+                    sections.append({
+                        "title": current_title,
+                        "page_number": current_page,
+                        "text": sec_text
+                    })
+                current_section_lines = []
+                current_title = line.strip().lstrip('#').strip()
+
+            current_section_lines.append(line)
+
+        if current_section_lines:
+            sec_text = "\n".join(current_section_lines).strip()
+            if sec_text:
+                sections.append({
+                    "title": current_title,
+                    "page_number": current_page,
+                    "text": sec_text
+                })
+
+        # Parent-Child parçaları üret
+        results = []
+        for sec in sections:
+            parent_text = sec["text"]
+            # Eğer bölüm genişse (ör. > 400 karakter), küçük child chunk'lara böl
+            if len(parent_text) > self.chunk_size:
+                child_texts = self._chunk_text(parent_text)
+                for child_t in child_texts:
+                    results.append({
+                        "chunk_text": child_t,
+                        "parent_chunk_text": parent_text,
+                        "section_title": sec["title"],
+                        "page_number": sec["page_number"],
+                    })
+            else:
+                results.append({
+                    "chunk_text": parent_text,
+                    "parent_chunk_text": parent_text,
+                    "section_title": sec["title"],
+                    "page_number": sec["page_number"],
+                })
+
+        return results
+
+    def _chunk_text(self, text: str) -> List[str]:
+        """Metni sabit/paragraf boyutlu parçalara böl."""
         if not text.strip():
             return []
 
@@ -225,32 +309,34 @@ class DocumentIngestor:
             content=content
         )
 
-        chunks = self._chunk_text(content)
-        logger.info(f"{source}: {len(chunks)} parca olusturuldu")
+        chunk_objs = self._chunk_document(content)
+        logger.info(f"{source}: {len(chunk_objs)} parca olusturuldu (Structure-Aware / Parent-Child)")
 
-        if not chunks:
+        if not chunk_objs:
             return {"document_id": doc_id, "chunks": 0, "status": "no_chunks"}
 
-        logger.info(f"Embedding olusturuluyor ({len(chunks)} parca)...")
+        chunk_texts = [c["chunk_text"] for c in chunk_objs]
+        logger.info(f"Embedding olusturuluyor ({len(chunk_objs)} parca)...")
         
         # Batching: 16'lik gruplar halinde bellek tasmalarini onle
         embeddings = []
         BATCH_SIZE = 16
-        for b in range(0, len(chunks), BATCH_SIZE):
-            batch_chunks = chunks[b:b + BATCH_SIZE]
-            batch_embeddings = self.embedding_manager.embed_batch(batch_chunks)
+        for b in range(0, len(chunk_texts), BATCH_SIZE):
+            batch_texts = chunk_texts[b:b + BATCH_SIZE]
+            batch_embeddings = self.embedding_manager.embed_batch(batch_texts)
             embeddings.extend(batch_embeddings)
 
-        # Tek transaction ile yaz: parca basina baglanti+commit acmak
-        # buyuk belgelerde yuklemeyi kilitleyen darbogazdi.
         db.add_chunks_bulk(doc_id, [
             {
                 "chunk_index": i,
-                "chunk_text": chunk_text,
+                "chunk_text": obj["chunk_text"],
+                "parent_chunk_text": obj.get("parent_chunk_text"),
+                "section_title": obj.get("section_title"),
+                "page_number": obj.get("page_number"),
                 "embedding": embedding,
-                "token_count": self._estimate_token_count(chunk_text),
+                "token_count": self._estimate_token_count(obj["chunk_text"]),
             }
-            for i, (chunk_text, embedding) in enumerate(zip(chunks, embeddings))
+            for i, (obj, embedding) in enumerate(zip(chunk_objs, embeddings))
         ])
 
         logger.info(f"{source} islendi: {len(chunks)} parca, {len(embeddings)} embedding")

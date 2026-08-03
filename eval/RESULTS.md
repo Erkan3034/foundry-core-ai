@@ -1,6 +1,6 @@
 # Yanit Kalitesi Degerlendirme Sonuclari
 
-Calistirma: 2026-07-22 08:24
+Calistirma: 2026-08-03 15:55
 
 Bu rapor `python eval/run_eval.py` ile uretilir. Unit testlerden farki:
 kodun calistigini degil, asistanin **dogru cevap verdigini** olcer.
@@ -8,61 +8,61 @@ kodun calistigini degil, asistanin **dogru cevap verdigini** olcer.
 ## Ozet
 
 - Toplam soru: **23**
-- Gecti: **15** / 19 otomatik puanlanan (%79)
-- Kaldi: **4**
+- Gecti: **7** / 19 otomatik puanlanan (%37)
+- Kaldi: **12**
 - Manuel inceleme: 4
-- Medyan yanit suresi: **16.26 s**
-- En yavas yanit: 74.09 s
+- Medyan yanit suresi: **13.55 s**
+- En yavas yanit: 60.07 s
 
 ### Kategori bazinda
 
 | Kategori | Gecti / Toplam | Ne olcuyor |
 |---|---|---|
-| cevaplanabilir | 12 / 12 | Belgedeki bilgiyi bulup dogru kaynakla veriyor mu |
-| cevaplanamaz | 3 / 4 | Belgede olmayan bilgiyi uydurmuyor mu |
-| tuzak | 0 / 3 | Anahtar kelime eslesiyor ama cevap yok - yine de reddediyor mu |
+| cevaplanabilir | 6 / 12 | Belgedeki bilgiyi bulup dogru kaynakla veriyor mu |
+| cevaplanamaz | 0 / 4 | Belgede olmayan bilgiyi uydurmuyor mu |
+| tuzak | 1 / 3 | Anahtar kelime eslesiyor ama cevap yok - yine de reddediyor mu |
 | kenar_durum | 0 / 4 | Bozuk/asiri genel girdide cokmuyor mu |
 
 ## Soru bazinda sonuclar
 
 | ID | Tip | Soru | Durum | Kaynak | Parca | Guven | Sure |
 |---|---|---|---|---|---|---|---|
-| C01 | cevaplanabilir | Ise yeni baslayan bir calisan ilk yilini doldurunca kac is gunu yillik izne hak kazanir? | **GECTI** | izin_politikasi.txt, ise_alim_oryantasyon.txt | 3 | 0.655 | 17.02s |
-| C02 | cevaplanabilir | Izin talebi en az kac is gunu once girilmelidir? | **GECTI** | izin_politikasi.txt, vpn_ve_bt_sss.txt | 3 | 0.504 | 17.20s |
-| C03 | cevaplanabilir | Evlilik durumunda kac is gunu ucretli mazeret izni verilir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt | 3 | 0.612 | 14.57s |
-| C04 | cevaplanabilir | Sehir ici is yemeklerinde kisi basi ust limit nedir? | **GECTI** | seyahat_politikasi.txt, masraf_politikasi.txt | 3 | 0.507 | 71.12s |
-| C05 | cevaplanabilir | Musteri agirlama yemeklerinde kisi basi limit ne kadardir? | **GECTI** | masraf_politikasi.txt, seyahat_politikasi.txt | 3 | 0.485 | 14.48s |
-| C06 | cevaplanabilir | Gecikmis masraf talepleri kac gun sonra odenmez? | **GECTI** | masraf_politikasi.txt, izin_politikasi.txt | 3 | 0.418 | 15.84s |
-| C07 | cevaplanabilir | Haftada en fazla kac gun uzaktan calisabilirim? | **GECTI** | uzaktan_calisma.txt, politika.txt, toplanti_ve_ofis_kurallari.txt | 3 | 0.445 | 15.75s |
-| C08 | cevaplanabilir | Hangi gun tum ekiplerin ofiste bulunmasi zorunludur? | **GECTI** | toplanti_ve_ofis_kurallari.txt, uzaktan_calisma.txt, etik_ve_uyum.txt | 3 | 0.429 | 16.26s |
-| C09 | cevaplanabilir | Standart mesai saatleri nedir? | **GECTI** | uzaktan_calisma.txt, seyahat_politikasi.txt, yan_haklar.txt | 3 | 0.335 | 17.05s |
-| C10 | cevaplanabilir | Kurumsal VPN istemcisinin adi nedir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, bilgi_guvenligi.txt | 3 | 0.488 | 15.35s |
-| C11 | cevaplanabilir | VPN baglantisi kac saat sonra otomatik olarak sonlanir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt | 3 | 0.562 | 16.94s |
-| C12 | cevaplanabilir | Standart dizustu bilgisayar yenileme suresi kac yildir? | **GECTI** | vpn_ve_bt_sss.txt, ise_alim_oryantasyon.txt | 3 | 0.597 | 16.11s |
-| R01 | cevaplanamaz | Sirketin 2025 yili cirosu ne kadardir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt | 3 | 0.304 | 16.67s |
-| R02 | cevaplanamaz | Sirketin Paris ofisinin adresi nedir? | **GECTI** | politika.txt | 1 | 0.349 | 6.91s |
-| R03 | cevaplanamaz | Calisanlara hisse senedi opsiyonu veriliyor mu? | **GECTI** | bilgi_guvenligi.txt, yan_haklar.txt, masraf_politikasi.txt | 3 | 0.322 | 14.32s |
-| R04 | cevaplanamaz | Sirketin CEO'su kimdir ve sirket hangi yil kurulmustur? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, izin_politikasi.txt | 3 | 0.281 | 17.60s |
-| T01 | tuzak | Yillik ciro hedefi ve kar marji nedir? | **KALDI** | izin_politikasi.txt, performans_degerlendirme.txt, masraf_politikasi.txt | 3 | 0.329 | 74.09s |
-| T02 | tuzak | Ofisteki toplanti salonunun aylik kirasi ne kadar? | **KALDI** | toplanti_ve_ofis_kurallari.txt, yan_haklar.txt | 3 | 0.482 | 33.36s |
-| T03 | tuzak | Kurumsal VPN altyapisinin yillik maliyeti butcede ne kadar? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt | 3 | 0.507 | 19.40s |
+| C01 | cevaplanabilir | Ise yeni baslayan bir calisan ilk yilini doldurunca kac is gunu yillik izne hak kazanir? | **KALDI** | izin_politikasi.txt, ise_alim_oryantasyon.txt, yan_haklar.txt | 4 | 0.655 | 11.50s |
+| C02 | cevaplanabilir | Izin talebi en az kac is gunu once girilmelidir? | **GECTI** | izin_politikasi.txt, vpn_ve_bt_sss.txt, bilgi_guvenligi.txt | 4 | 0.504 | 10.94s |
+| C03 | cevaplanabilir | Evlilik durumunda kac is gunu ucretli mazeret izni verilir? | **GECTI** | izin_politikasi.txt, yan_haklar.txt, masraf_politikasi.txt | 4 | 0.612 | 9.81s |
+| C04 | cevaplanabilir | Sehir ici is yemeklerinde kisi basi ust limit nedir? | **GECTI** | seyahat_politikasi.txt, masraf_politikasi.txt | 4 | 0.507 | 11.22s |
+| C05 | cevaplanabilir | Musteri agirlama yemeklerinde kisi basi limit ne kadardir? | **KALDI** | masraf_politikasi.txt, seyahat_politikasi.txt | 4 | 0.485 | 17.20s |
+| C06 | cevaplanabilir | Gecikmis masraf talepleri kac gun sonra odenmez? | **KALDI** | masraf_politikasi.txt, izin_politikasi.txt, yan_haklar.txt | 4 | 0.418 | 10.41s |
+| C07 | cevaplanabilir | Haftada en fazla kac gun uzaktan calisabilirim? | **KALDI** | uzaktan_calisma.txt, politika.txt, toplanti_ve_ofis_kurallari.txt | 4 | 0.445 | 23.08s |
+| C08 | cevaplanabilir | Hangi gun tum ekiplerin ofiste bulunmasi zorunludur? | **KALDI** | toplanti_ve_ofis_kurallari.txt, uzaktan_calisma.txt, etik_ve_uyum.txt | 4 | 0.429 | 9.27s |
+| C09 | cevaplanabilir | Standart mesai saatleri nedir? | **GECTI** | uzaktan_calisma.txt, seyahat_politikasi.txt, yan_haklar.txt, masraf_politikasi.txt | 4 | 0.335 | 11.91s |
+| C10 | cevaplanabilir | Kurumsal VPN istemcisinin adi nedir? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, bilgi_guvenligi.txt | 4 | 0.488 | 15.25s |
+| C11 | cevaplanabilir | VPN baglantisi kac saat sonra otomatik olarak sonlanir? | **GECTI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, ise_alim_oryantasyon.txt | 4 | 0.562 | 13.55s |
+| C12 | cevaplanabilir | Standart dizustu bilgisayar yenileme suresi kac yildir? | **GECTI** | vpn_ve_bt_sss.txt, ise_alim_oryantasyon.txt | 4 | 0.597 | 23.61s |
+| R01 | cevaplanamaz | Sirketin 2025 yili cirosu ne kadardir? | **KALDI** | izin_politikasi.txt, yan_haklar.txt, performans_degerlendirme.txt | 4 | 0.304 | 23.40s |
+| R02 | cevaplanamaz | Sirketin Paris ofisinin adresi nedir? | **KALDI** | politika.txt | 1 | 0.349 | 14.43s |
+| R03 | cevaplanamaz | Calisanlara hisse senedi opsiyonu veriliyor mu? | **KALDI** | bilgi_guvenligi.txt, yan_haklar.txt, masraf_politikasi.txt | 4 | 0.322 | 60.07s |
+| R04 | cevaplanamaz | Sirketin CEO'su kimdir ve sirket hangi yil kurulmustur? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, izin_politikasi.txt, yan_haklar.txt | 4 | 0.281 | 34.41s |
+| T01 | tuzak | Yillik ciro hedefi ve kar marji nedir? | **KALDI** | izin_politikasi.txt, performans_degerlendirme.txt, masraf_politikasi.txt, yan_haklar.txt | 4 | 0.329 | 15.68s |
+| T02 | tuzak | Ofisteki toplanti salonunun aylik kirasi ne kadar? | **GECTI** | toplanti_ve_ofis_kurallari.txt, yan_haklar.txt, masraf_politikasi.txt | 4 | 0.482 | 17.38s |
+| T03 | tuzak | Kurumsal VPN altyapisinin yillik maliyeti butcede ne kadar? | **KALDI** | vpn_ve_bt_sss.txt, uzaktan_calisma.txt, bilgi_guvenligi.txt | 4 | 0.507 | 16.33s |
 | K01 | kenar_durum | _(bos)_ | **INCELE** | - | 0 | 0.000 | 0.00s |
-| K02 | kenar_durum | ? | **INCELE** | - | 0 | 0.000 | 3.60s |
-| K03 | kenar_durum | merhaba | **INCELE** | izin_politikasi.txt, ise_alim_oryantasyon.txt | 3 | 0.366 | 18.21s |
-| K04 | kenar_durum | Sirket hakkindaki her seyi bana tek tek anlat | **INCELE** | politika.txt, bilgi_guvenligi.txt, ise_alim_oryantasyon.txt | 3 | 0.374 | 15.10s |
+| K02 | kenar_durum | ? | **INCELE** | - | 0 | 0.000 | 5.06s |
+| K03 | kenar_durum | merhaba | **INCELE** | izin_politikasi.txt, ise_alim_oryantasyon.txt | 3 | 0.366 | 12.94s |
+| K04 | kenar_durum | Sirket hakkindaki her seyi bana tek tek anlat | **INCELE** | politika.txt, bilgi_guvenligi.txt, ise_alim_oryantasyon.txt, etik_ve_uyum.txt | 4 | 0.374 | 11.27s |
 
 ## Yanit detaylari
 
-### C01 - GECTI
+### C01 - KALDI
 
 **Soru:** Ise yeni baslayan bir calisan ilk yilini doldurunca kac is gunu yillik izne hak kazanir?
 
-**Degerlendirme:** icerik + kaynak dogru
+**Degerlendirme:** kaynak dogru, beklenen deger yok (['14'])
 
 **Yanit:**
 
 ```
-14 isgunluğuna hak kazanır.
+Bu konuda elimdeki belgelerde bilgi bulunmuyor.
 ```
 
 ### C02 - GECTI
@@ -74,7 +74,7 @@ kodun calistigini degil, asistanin **dogru cevap verdigini** olcer.
 **Yanit:**
 
 ```
-En az 5 isgunluce talebilmelidir.
+Bilgilere göre, İzin Talebi en az 5 is gunu once girilmelidir.
 ```
 
 ### C03 - GECTI
@@ -86,7 +86,7 @@ En az 5 isgunluce talebilmelidir.
 **Yanit:**
 
 ```
-3 isgun
+Evlilik durumunda, 3 is gunu ucretli mazeret izni verilir.
 ```
 
 ### C04 - GECTI
@@ -98,86 +98,55 @@ En az 5 isgunluce talebilmelidir.
 **Yanit:**
 
 ```
-1. Yalnizca BAGLAM'daki gercekleri kullan. BAGLAM'da GECMEYEN sayi, tutar, tarih,
-   yuzde veya isim URETME.
-
-2. Kullanicinin sordugu dilde (Turkce soruya Turkce, Ingilizce soruya Ingilizce)
-   kisa ve net yaz.
-
-BAGLAM:
-[KAYNAK: seyahat_politikasi.txt | PARCA 1]
-secilir. Sehir bazli gecelik konaklama limitleri portalda yayinlanir; Istanbul, Ankara ve Izmir icin standart limit gecelik 4.500 TL'dir. Limit ustu konaklamalar direktor onayi gerektirir.
-Gunluk Harcirah
-Yurt ici seyahatlerde gunluk harcirah 1.200 TL, yurt disi seyahatlerde ulke grubuna gore 60 - 100 EUR'dur. Harcirah, yemek ve sehir ici kucuk ulasim giderlerini kapsar; ayrica fisli yemek masrafi talep edilemez.
-
-Seyahat Guvenligi
-Yurt disi seyahatlerden once seyahat saglik sigortasi otomatik olarak duzenlenir. Riskli bolgelere seyahat, Guvenlik ekibinin on degerlendirmesine tabidir. Acil durumlarda 7/24 seyahat destek hatti +90 212 000 00 00 aranmalidir.
-
----
-
-[KAYNAK: masraf_politikasi.txt | PARCA 2]
-MASRAF VE HARCAMA POLITIKASI
-
-Genel Ilkeler
-Is amacli yapilan harcamalar, belgelendirilmek kosuluyla sirket tarafindan karsilanir. Tum masraf kayitlari, harcamayi takip eden 10 is gunu icinde masraf yonetim sistemine fis veya fatura goruntusu ile girilmelidir. 30 gunu asan gecikmis masraf talepleri odenmez.
-
-Yemek Masraflari
-Sehir ici is yemeklerinde kisi basi ust limit 750 TL'dir. Musteri agirlama yemeklerinde limit kisi basi 1.500 TL'dir ve yonetici on onayi gerekir. Alkollu icecek masraflari sirket tarafindan karsilanmaz.
-
-Ulasim Masraflari
-Sehir ici is seyahatlerinde oncelikle toplu tasima veya kurumsal anlasmali taksi uygulaması kullanilır. Ozel arac kullaniminda kilometre basina yakit bedeli, her yil Ocak ayinda guncellenen kurumsal tarife uzerinden odenir. Havalimani transferlerinde standart taksi ucreti karsilanir.
-
----
-
-[KAYNAK: seyahat
+Sehir ici is yemeklerinde kisi basi ust limit 750 TL'dir.
 ```
 
-### C05 - GECTI
+### C05 - KALDI
 
 **Soru:** Musteri agirlama yemeklerinde kisi basi limit ne kadardir?
 
-**Degerlendirme:** icerik + kaynak dogru
+**Degerlendirme:** kaynak dogru, beklenen deger yok (['1.500', '1500'])
 
 **Yanit:**
 
 ```
-1.500 TL'dir.
+Bu bilgilendirme bilgisini kaybettiğiniz senin bilgiye göre bu bilgi konusunda ilginç ve uygun şekilde kabul edilmesi için, bu bilgi konusundaki bilgi verilerini koruması gereken bir nokta olup, bu konusunda ilginç ve uygun şekilde kodlayabilirim. Bu bilgilendirme bilgisini kaybetteğiniz senin bilgiye göre
 ```
 
-### C06 - GECTI
+### C06 - KALDI
 
 **Soru:** Gecikmis masraf talepleri kac gun sonra odenmez?
 
-**Degerlendirme:** icerik + kaynak dogru
+**Degerlendirme:** kaynak dogru, beklenen deger yok (['30'])
 
 **Yanit:**
 
 ```
-Geçikmis masraf talepleri 30 gün sonra odenmez.
+Bu konuda elimdeki belgelerde bilgi bulunmuyor.
 ```
 
-### C07 - GECTI
+### C07 - KALDI
 
 **Soru:** Haftada en fazla kac gun uzaktan calisabilirim?
 
-**Degerlendirme:** icerik + kaynak dogru
+**Degerlendirme:** kaynak dogru, beklenen deger yok (['2'])
 
 **Yanit:**
 
 ```
-Haftada en fazla 2 gün uzaktan çalışabilirsiniz.
+Bu bilgilendirme konusu soruna göre, bu bilgi genellikle genel turkce kitaplarında ve genel bir bilgi için kullanılamaz. Bu bilgilendirme konusunda genel turkce kitaplarında ve genel bir bilgi için kullanılamaz.
 ```
 
-### C08 - GECTI
+### C08 - KALDI
 
 **Soru:** Hangi gun tum ekiplerin ofiste bulunmasi zorunludur?
 
-**Degerlendirme:** icerik + kaynak dogru
+**Degerlendirme:** kaynak dogru, beklenen deger yok (['Pazartesi'])
 
 **Yanit:**
 
 ```
-Pazartesi günü tum ekiplerin ofiste bulunmasi zorunludur.
+Günevarli ofiste bulunmasi zorunludur.
 ```
 
 ### C09 - GECTI
@@ -189,19 +158,19 @@ Pazartesi günü tum ekiplerin ofiste bulunmasi zorunludur.
 **Yanit:**
 
 ```
-Standart mesai saatleri 09:00 - 18:00 arasıdır.
+Standart mesai saatleri 09:00 - 18:00 arasidir.
 ```
 
-### C10 - GECTI
+### C10 - KALDI
 
 **Soru:** Kurumsal VPN istemcisinin adi nedir?
 
-**Degerlendirme:** icerik + kaynak dogru
+**Degerlendirme:** kaynak dogru, beklenen deger yok (['SecureConnect'])
 
 **Yanit:**
 
 ```
-"SecureConnect"
+BAGLAM'da genellikle "vpn_ve_bt_sss.txt" dosyanı kullanır ve bu dosya içindeki tüm bilgilere göre kurumsal ve buğdayalarda IP adresi ve telərəni bilintir. Bu bilgilere göre, BAGLAM'da genellikle "bt_destek@sirket.com" adını kullanır.
 ```
 
 ### C11 - GECTI
@@ -213,7 +182,7 @@ Standart mesai saatleri 09:00 - 18:00 arasıdır.
 **Yanit:**
 
 ```
-OTOMATİK SONLANMA SAATI: 12 SADARCI SANIYE AKTSI.
+VPN baglantisi 12 saat sonra otomatik olarak sonlanır ve bunu daha sonra 4 saat sonucunda sonlandı.
 ```
 
 ### C12 - GECTI
@@ -225,43 +194,43 @@ OTOMATİK SONLANMA SAATI: 12 SADARCI SANIYE AKTSI.
 **Yanit:**
 
 ```
-3 yıldır
+Dizustu bilgisayar yenileme suresi 3 yıldır.
 ```
 
-### R01 - GECTI
+### R01 - KALDI
 
 **Soru:** Sirketin 2025 yili cirosu ne kadardir?
 
-**Degerlendirme:** dogru sekilde reddetti
+**Degerlendirme:** UYDURDU - belgede olmayan bilgiye cevap uretti
 
 **Yanit:**
 
 ```
-Bu konuda elimdeki belgelerde bilgi bulunmuyor.
+Bilgilere göre, 2025 yılı 2026 yılından 26 gün boyunca ilerleyebilir. Bu da 26 günlik ve 26 günlik arasında geçecek.
 ```
 
-### R02 - GECTI
+### R02 - KALDI
 
 **Soru:** Sirketin Paris ofisinin adresi nedir?
 
-**Degerlendirme:** dogru sekilde reddetti
+**Degerlendirme:** UYDURDU - belgede olmayan bilgiye cevap uretti
 
 **Yanit:**
 
 ```
-Bu konuda elimdeki belgelerde bilgi bulunmuyor.
+Bilginizde bulunmayan bilgilere sahip olmaksızdı. Sirketin Paris ofisinin adresi bilgisini verilmek için başka bir bilgiye ihtiyacım var.
 ```
 
-### R03 - GECTI
+### R03 - KALDI
 
 **Soru:** Calisanlara hisse senedi opsiyonu veriliyor mu?
 
-**Degerlendirme:** dogru sekilde reddetti
+**Degerlendirme:** UYDURDU - belgede olmayan bilgiye cevap uretti
 
 **Yanit:**
 
 ```
-Bu konuda elimdeki belgelerde bilgi bulunmuyor.
+Yaşayan ve geçişten sonra sadece senin bilgiye ulaşmakta.
 ```
 
 ### R04 - KALDI
@@ -273,7 +242,7 @@ Bu konuda elimdeki belgelerde bilgi bulunmuyor.
 **Yanit:**
 
 ```
-Üzgünüz, bu bilgilerimizle ilgili bilgim yoktur. Ancak, şirketin kuruluş tarihi ve CEO'nun kim olduğunu öğrenmek için daha fazlasını aramak gerekir. Bu bilgilerinizi nasıl paylaşabilirsiniz?
+Bu sorunu tam olarak genellikle Sirketin CEO'ı ve Sirket'in kurulması için bir yılı notayı vermektedir. Ancak bu bilgilere ulaşmak için Sirketin hizmet listesindeki Sirket Yönetimi ve Sirket Yönetimi Listesi notları kullanmak gerekmektedir. Ayrıca
 ```
 
 ### T01 - KALDI
@@ -285,25 +254,19 @@ Bu konuda elimdeki belgelerde bilgi bulunmuyor.
 **Yanit:**
 
 ```
-Kar Marji: Yillik Ciro Hedefi
-
-- **Hedef**: Birçok iş için gereken ciro ve tedavilerin bir örneği olan yillik ciro hedefi, bir kişinin yıldızlık veya bir iş için gereklenecek ciro miktarını gösterir.
-
-- **Kar Marji**: Kar Marji, bir kişinin yıldızlık veya bir iş için gereklenecek ciro miktarını gösterir.
-
-- **Hedef Miktarı**: Yillik ciro hedef
+Bu bilgilere göre, ilginç ilerel ilerliyor musun?
 ```
 
-### T02 - KALDI
+### T02 - GECTI
 
 **Soru:** Ofisteki toplanti salonunun aylik kirasi ne kadar?
 
-**Degerlendirme:** UYDURDU - belgede olmayan bilgiye cevap uretti
+**Degerlendirme:** dogru sekilde reddetti
 
 **Yanit:**
 
 ```
-Aylik toplanti salonunun kirasi, sirket tarafından belirlenen ve toplanti salonuna kazandırmak için kullanılan bir maliyettır. Bu maliyet,
+Bilgilendirilen bilgilerde, toplanti odalari, toplanti odalari ve toplanti notu gibi bilginin tüm alanlarında bilinen bilgi bulunmuyor. Bu da bunu ve diğer bilgilere göre
 ```
 
 ### T03 - KALDI
@@ -315,7 +278,7 @@ Aylik toplanti salonunun kirasi, sirket tarafından belirlenen ve toplanti salon
 **Yanit:**
 
 ```
-Bu bilginizin kesin tanımı bulunmadığı için, doğru bir hesaplayıcı çıkarma işlemi gerçekleştirebilmemiş olabilirim. Ancak, genellikle bu tip bir şeyin yıllık maliyeti yaklaşık 500 TL ila 1000 TL arasında düşünebilir. Bu miktarın kesin değerini kesin bir hesaplayıcıya göre bulmanız önerilir.
+Bu bilgilendirme sistemi genellikle bu bilgiyi ayırt edebilir ve bu bilgiyi kullanmak için bu bilgilendirme sistemi kullanmak gereklidir. B
 ```
 
 ### K01 - INCELE

@@ -119,10 +119,6 @@ BAGLAM:
         self._chat_client = self._chat_model.get_chat_client()
         self._chat_client.settings.max_tokens = CONFIG.max_tokens
         self._chat_client.settings.temperature = CONFIG.temperature
-        # DIKKAT: frequency_penalty'yi 0.0 GONDERMEK modeli tamamen bozar
-        # (sadece noktalama uretir). 0 ise hic gonderme (None birak).
-        if CONFIG.frequency_penalty > 0:
-            self._chat_client.settings.frequency_penalty = CONFIG.frequency_penalty
 
         self._initialized = True
         logger.info("RAG Engine hazir")
@@ -158,8 +154,10 @@ BAGLAM:
                 "confidence": 0.0
             }
 
-        # 1. RETRIEVE - Ilgili parcalari bul
+        # 1. RETRIEVE - Sorguya en uygun parçaları ve bağlamı getir
         retrieval_result = self.retriever.retrieve_with_context(query)
+        sources = retrieval_result["sources"]
+        context = retrieval_result["context"]
 
         if not retrieval_result["results"]:
             fallback = "Bu konuda elimdeki belgelerde bilgi bulunmuyor."
